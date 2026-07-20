@@ -23,6 +23,21 @@ step inside a journey bearing. Check the context before assuming which is meant.
   time; `parseBearing(string)` is the Worker entry point and `loadBearing(path)`
   is a build-time-only helper.
 
+## How code gets written here
+
+- **TypeScript.** No JavaScript source. The one exception is build tooling —
+  Orchestra's `build-skills.mjs` precedent — which is `.mjs` because it runs
+  before a build exists.
+- **Test-driven, always.** A failing test first, then the code that passes it.
+  This is not negotiable per work item and does not need re-deciding in each
+  spec. Negative tests assert on the error *message*, not just that it threw:
+  validation messages are the authoring interface for anyone writing a bearing
+  by hand.
+- Strict compiler settings, including `exactOptionalPropertyTypes` — an absent
+  optional field is an omitted key, never a key set to `undefined`. Parsed
+  bearings get embedded in generated modules, so they must survive a JSON
+  round-trip unchanged.
+
 ## Ownership
 
 Compass owns the bearing schema. Every other consumer — including savvy — pins a
