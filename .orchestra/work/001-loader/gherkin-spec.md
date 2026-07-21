@@ -1,3 +1,11 @@
+---
+ticket: 001-loader
+artifact: gherkin
+status: approved
+created_on: 2026-07-20
+approved_on: 2026-07-21
+---
+
 # Gherkin Scenarios: Loader — Compass Owns the Bearing Schema
 
 > Source: .orchestra/work/001-loader/spec.md
@@ -37,9 +45,9 @@ Feature: Module boundary — fs is structurally unreachable
     Then it returns a parsed bearing without touching a Node global
 
   Scenario: Both entry points agree
-    Given a fixture on disk and the same fixture read as a string
+    Given each of the two fixtures on disk and the same fixture read as a string
     When loadBearing is called with the path and parseBearing with the string
-    Then the two results are deep-equal
+    Then the two results are deep-equal for both fixtures
 ```
 
 ```gherkin
@@ -67,11 +75,22 @@ Feature: Envelope — schema v2
       | version |
       | profile |
 
-  Scenario: A non-integer version is rejected
-    Given a bearing whose version is a string or a float
+  Scenario: An unknown profile value is rejected
+    Given a bearing whose profile is neither journey nor standing
+    When it is parsed
+    Then it throws a BearingValidationError
+    And the message names profile and the offending value
+
+  Scenario Outline: A non-integer version is rejected
+    Given a bearing whose version is <bad>
     When it is parsed
     Then it throws
     And the message names version
+
+    Examples:
+      | bad      |
+      | a string |
+      | a float  |
 
   Scenario: An unknown top-level key is rejected
     Given a bearing carrying a key the envelope allow-list does not name
@@ -133,10 +152,10 @@ Feature: Journey profile — construct, don't cast
       | field                     | malformed                        |
       | mode                      | a string rather than an array    |
       | stages[0].artifact        | a number                         |
-      | stages[0].unlocks         | an array containing a number     |
-      | stages[0].scoring         | missing dimensions               |
-      | stages[0].scoring         | dimensions set to an empty array |
-      | stages[0].gate            | requires_signoff set to a string |
+      | stages[0].unlocks            | an array containing a number  |
+      | stages[0].scoring.dimensions | absent                        |
+      | stages[0].scoring.dimensions | set to an empty array         |
+      | stages[0].gate               | requires_signoff set to a string |
 
   Scenario: A bearing with no stages is rejected
     Given a journey bearing whose stages array is empty
@@ -219,12 +238,16 @@ Feature: Standing profile — with SAV-121's two fixes
     And the message carries the positional path <field>
 
     Examples:
-      | field                       | malformed                |
-      | targets[0].tier             | a tier outside A, B, C   |
-      | targets[0].confirmed        | a string                 |
-      | targets[0].target.period    | a number                 |
-      | targets[0].actual.goal_tool | a number                 |
-      | rhythms[0].count            | a string                 |
+      | field                              | malformed              |
+      | targets[0].tier                    | a tier outside A, B, C |
+      | targets[0].confirmed               | a string               |
+      | targets[0].target.period           | a number               |
+      | targets[0].actual                  | absent                 |
+      | targets[0].actual.source           | absent                 |
+      | targets[0].actual.goal_tool        | a number               |
+      | targets[0].actual.actual_tool      | a number               |
+      | rhythms[0].count                   | a string               |
+      | initiatives[0].milestones[0].label | absent                 |
 
   @wip
   Scenario: The Tier C tool-ref rule is a recorded gap

@@ -36,7 +36,7 @@ loader already exists, and the work is bearings and client scoping.
 
 | Milestone | Location | Status |
 |-----------|----------|--------|
-| M1: Loader lifted and owned | .orchestra/work/001-loader/prd.md | Spec approved — gherkin, then implementation |
+| M1: Loader lifted and owned | .orchestra/work/001-loader/prd.md | Gherkin approved — implementation next |
 | M2: MCP server deployed | .orchestra/work/002-mcp-compass/prd.md | Not started |
 | M3: Brand Builder bearing | .orchestra/work/003-brand-builder/prd.md | Not started |
 | M4: First engagement (Savvy Hair Loft) | .orchestra/work/004-engagement/prd.md | Not started |
