@@ -59,3 +59,17 @@ Before starting any non-trivial work:
 
 Record sessions with `orchestra_devlog_entry` (write the returned file), and
 record significant decisions as ADRs in `.orchestra/adr/`.
+
+## Work tracking — `.orchestra` for agents, Linear for humans
+
+`.orchestra/` is the source of truth. The humans organize the same work in
+Linear, in the **`workshed`** workspace (org `shed`), under the **Shed** team
+(key `SHE`), **Compass** project. A Linear issue is a card that points at a repo
+artifact — it never holds a bearing, an artifact, or a gate decision. Keep the
+two in sync only through that thin pointer; the repo stays authoritative. Making
+Linear the source of truth would be an ADR-level change, not a default.
+
+Milestones live as issues SHE-5 (M1) through SHE-8 (M4). The claude.ai Linear
+MCP tools are OAuth-scoped to Savvy and **cannot see `workshed`** — reach it with
+`LINEAR_WORKSHED_API_KEY` (`~/.api_keys`) against `https://api.linear.app/graphql`
+(`Authorization: <key>`, no "Bearer").
