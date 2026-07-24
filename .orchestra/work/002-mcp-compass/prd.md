@@ -1,7 +1,8 @@
 ---
 ticket: 002-mcp-compass
-status: draft
+status: approved
 created_on: 2026-07-24
+approved_on: 2026-07-24
 ---
 
 # MCP Server — Compass Serves Bearings Over a Connector
