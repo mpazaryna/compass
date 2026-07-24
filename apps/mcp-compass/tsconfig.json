@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // The handler uses only web-standard globals (Request/Response/URL), which
+    // Node's lib provides; the tests and the bake use node: builtins. No
+    // Cloudflare-specific types are referenced, so node types alone typecheck
+    // both the Worker and the tests without workers-types global conflicts.
+    "types": ["node"]
+  },
+  "include": ["src", "test"]
+}

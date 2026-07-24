@@ -1,0 +1,6 @@
+# Deliberately malformed: missing the required envelope field `name`.
+# Used to prove the bake fails the build on an invalid bearing.
+bearing: broken
+version: 1
+profile: journey
+stages: []
