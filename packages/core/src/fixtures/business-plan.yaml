@@ -13,7 +13,6 @@ bearing: business-plan
 name: "Savvy Hair Loft — 2026 Business Plan"
 version: 1
 profile: standing
-audience: ceo                     # CEO-Hub gate (mirrors audience: ceo front-matter)
 source:
   - loft/data/kb/ceo/financial-targets.md
   - loft/data/kb/ceo/marketing-plan.md

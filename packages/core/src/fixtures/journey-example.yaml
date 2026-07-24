@@ -4,7 +4,6 @@ bearing: brand-builder
 name: "Brand Builder"
 version: 1
 profile: journey
-audience: owner
 source:
   - .orchestra/shared/work/compass-bearing-schema/spec.md
 mode: [build, extract]            # journey-only: SAV-68's two postures

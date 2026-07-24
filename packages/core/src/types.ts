@@ -13,10 +13,14 @@ export interface BearingEnvelope {
   /** consumers may pin; bump on breaking change */
   version: number
   profile: BearingProfile
-  /** visibility gate (mirrors CEO Hub / audience: front-matter) */
-  audience: string
-  /** provenance — where the content was authored from */
-  source: string[]
+  /** provenance — where the content was authored from (optional, non-empty when present) */
+  source?: string[]
+  /**
+   * Client scope. Absent means universal methodology; present names the client
+   * a bearing is scoped to. Nothing in M1 consumes it — M2's key-scoped serving
+   * does. (v2: replaces v1's `audience` visibility gate.)
+   */
+  client?: string
 }
 
 // --- Profile: journey --------------------------------------------------------

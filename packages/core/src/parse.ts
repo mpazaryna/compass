@@ -29,7 +29,10 @@ export class BearingValidationError extends Error {
   }
 }
 
-const ENVELOPE_KEYS = ['bearing', 'name', 'version', 'profile', 'audience', 'source'] as const
+// v2 envelope: `audience` (v1) is gone — it is no longer listed, so the strict
+// allow-list below rejects any bearing that still carries it, naming the key.
+// `client` is new and optional; `source` is optional (validated when present).
+const ENVELOPE_KEYS = ['bearing', 'name', 'version', 'profile', 'source', 'client'] as const
 
 /** Extra top-level keys each profile is allowed to carry beyond the envelope. */
 const PROFILE_KEYS: Record<BearingProfile, readonly string[]> = {
@@ -82,11 +85,17 @@ export function parseBearing(yamlText: string): Bearing {
     fail(`${ctx}: "profile" must be one of ${PROFILES.join(' | ')} (got ${JSON.stringify(profile)})`)
   }
 
-  requireString(raw, 'audience', ctx)
+  // `source` is optional in v2, but a non-empty array of strings when present.
+  if (raw.source !== undefined) {
+    const source = requireArray(raw, 'source', ctx)
+    if (source.length === 0 || !source.every((s) => typeof s === 'string')) {
+      fail(`${ctx}: "source" must be a non-empty array of strings`)
+    }
+  }
 
-  const source = requireArray(raw, 'source', ctx)
-  if (source.length === 0 || !source.every((s) => typeof s === 'string')) {
-    fail(`${ctx}: "source" must be a non-empty array of strings`)
+  // `client` is optional; a non-empty string when present.
+  if (raw.client !== undefined) {
+    requireString(raw, 'client', ctx)
   }
 
   // --- Profile dispatch: strict top-level allow-list ---

@@ -25,8 +25,8 @@ describe('loadBearing — standing profile (business-plan.yaml)', () => {
     const bearing = loadBearing(businessPlanPath) as StandingBearing
     expect(bearing.profile).toBe('standing')
     expect(bearing.bearing).toBe('business-plan')
-    expect(bearing.audience).toBe('ceo')
-    expect(bearing.source.length).toBeGreaterThan(0)
+    expect(bearing.source).toBeDefined()
+    expect(bearing.source!.length).toBeGreaterThan(0)
   })
 
   it('has exactly one Tier B target (revenue) sourced from savvy-finance', () => {
