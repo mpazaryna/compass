@@ -1,6 +1,6 @@
 ---
 ticket: 001-loader
-status: complete
+status: reviewed
 created_on: 2026-07-20
 approved_on: 2026-07-20
 ---
