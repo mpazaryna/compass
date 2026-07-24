@@ -26,9 +26,11 @@ import type {
   JourneyStageGate,
   JourneyStageScoring,
   Rhythm,
+  RhythmCadence,
   StandingBearing,
   Target,
   TargetActual,
+  TargetDirection,
   TargetTier,
   TargetValue,
 } from './types.ts'
@@ -254,19 +256,44 @@ function validateTarget(t: unknown, tctx: string): Target {
     fail(`${tctx}: "confirmed" must be a boolean`)
   }
 
-  return { id, label, target, actual, tier: t.tier as TargetTier, confirmed: t.confirmed }
+  // `direction` (SAV-121): optional in the source, materialised to `gte` when
+  // absent so consumers never re-implement the default. This is the one field
+  // whose absent-optional is filled rather than omitted.
+  let direction: TargetDirection = 'gte'
+  if (t.direction !== undefined) {
+    if (t.direction !== 'gte' && t.direction !== 'lte') {
+      fail(`${tctx}: "direction" must be gte | lte`)
+    }
+    direction = t.direction
+  }
+
+  return { id, label, target, actual, tier: t.tier as TargetTier, direction, confirmed: t.confirmed }
+}
+
+// Each cadence has exactly one valid reset anchor (SAV-121); all are local to
+// the consumer. Previously `reset` accepted any string.
+const CADENCE_ANCHORS: Record<RhythmCadence, string> = {
+  weekly: 'monday',
+  monthly: 'first',
+  daily: 'local-day',
 }
 
 function validateRhythm(r: unknown, rctx: string): Rhythm {
   if (!isPlainObject(r)) fail(`${rctx}: must be a mapping`)
   const id = requireString(r, 'id', rctx)
   const label = requireString(r, 'label', rctx)
-  if (r.cadence !== 'weekly' && r.cadence !== 'monthly') {
-    fail(`${rctx}: "cadence" must be weekly | monthly`)
+
+  const cadence = r.cadence
+  if (cadence !== 'weekly' && cadence !== 'monthly' && cadence !== 'daily') {
+    fail(`${rctx}: "cadence" must be weekly | monthly | daily`)
   }
   const reset = requireString(r, 'reset', rctx)
+  const expectedAnchor = CADENCE_ANCHORS[cadence]
+  if (reset !== expectedAnchor) {
+    fail(`${rctx}: "reset" must be "${expectedAnchor}" for cadence "${cadence}"`)
+  }
 
-  const result: Rhythm = { id, label, cadence: r.cadence, reset }
+  const result: Rhythm = { id, label, cadence, reset }
   if (r.count !== undefined) {
     if (typeof r.count !== 'number') fail(`${rctx}: "count" must be a number`)
     result.count = r.count

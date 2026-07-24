@@ -253,3 +253,80 @@ describe('parseBearing — journey stage ids are unique within a bearing', () =>
     expect(() => parseBearing(twoStages('a', 'b'))).not.toThrow()
   })
 })
+
+// --- Step 6: standing + SAV-121's two fixes ----------------------------------
+
+const standingTarget = (extra = ''): string =>
+  [
+    'bearing: s',
+    'name: "S"',
+    'version: 1',
+    'profile: standing',
+    'targets:',
+    '  - id: t1',
+    '    label: "T1"',
+    '    target: { value: 100, unit: usd }',
+    '    actual: { source: none }',
+    '    tier: C',
+    '    confirmed: false' + extra,
+    'rhythms: []',
+    'initiatives: []',
+  ].join('\n')
+
+const standingRhythm = (cadence: string, reset: string): string =>
+  [
+    'bearing: s',
+    'name: "S"',
+    'version: 1',
+    'profile: standing',
+    'targets: []',
+    'rhythms:',
+    '  - id: r1',
+    '    label: "R1"',
+    `    cadence: ${cadence}`,
+    `    reset: ${reset}`,
+    'initiatives: []',
+  ].join('\n')
+
+describe('parseBearing — target direction materialised (SAV-121)', () => {
+  it('defaults a target without direction to gte in the output', () => {
+    const bearing = parseBearing(standingTarget()) as StandingBearing
+    expect(bearing.targets[0]!.direction).toBe('gte')
+  })
+
+  it('carries an explicit lte direction', () => {
+    const bearing = parseBearing(standingTarget('\n    direction: lte')) as StandingBearing
+    expect(bearing.targets[0]!.direction).toBe('lte')
+  })
+
+  it('rejects an invalid direction', () => {
+    expect(() => parseBearing(standingTarget('\n    direction: sideways'))).toThrow(/direction/)
+  })
+})
+
+describe('parseBearing — rhythm cadence/anchor pairing (SAV-121 daily)', () => {
+  it('accepts daily with reset local-day', () => {
+    expect(() => parseBearing(standingRhythm('daily', 'local-day'))).not.toThrow()
+  })
+
+  it('accepts weekly with monday and monthly with first', () => {
+    expect(() => parseBearing(standingRhythm('weekly', 'monday'))).not.toThrow()
+    expect(() => parseBearing(standingRhythm('monthly', 'first'))).not.toThrow()
+  })
+
+  it('rejects daily paired with reset monday', () => {
+    expect(() => parseBearing(standingRhythm('daily', 'monday'))).toThrow(/local-day/)
+  })
+
+  it('rejects weekly paired with reset first', () => {
+    expect(() => parseBearing(standingRhythm('weekly', 'first'))).toThrow(/monday/)
+  })
+
+  it('rejects monthly paired with reset monday', () => {
+    expect(() => parseBearing(standingRhythm('monthly', 'monday'))).toThrow(/first/)
+  })
+
+  it('rejects an unknown cadence', () => {
+    expect(() => parseBearing(standingRhythm('yearly', 'first'))).toThrow(/cadence/)
+  })
+})

@@ -73,17 +73,27 @@ export interface TargetActual {
   actual_tool?: string
 }
 
+/** Comparator for a target's actual against its goal (SAV-121). */
+export type TargetDirection = 'gte' | 'lte'
+
 export interface Target {
   id: string
   label: string
   target: TargetValue
   actual: TargetActual
   tier: TargetTier
+  /**
+   * Comparator direction (SAV-121). Always present in the parsed output:
+   * omitting it in the source materialises to `gte`, so consumers never
+   * re-implement the default and disagree. The single materialised-default
+   * field in the schema.
+   */
+  direction: TargetDirection
   /** false while the value is [confirm with Sheri] */
   confirmed: boolean
 }
 
-export type RhythmCadence = 'weekly' | 'monthly'
+export type RhythmCadence = 'weekly' | 'monthly' | 'daily'
 
 export interface Rhythm {
   id: string
@@ -91,7 +101,11 @@ export interface Rhythm {
   cadence: RhythmCadence
   /** optional target count per period */
   count?: number
-  /** reset anchor: `monday` (ISO week) for weekly, `first` (calendar 1st) for monthly */
+  /**
+   * Reset anchor, paired with cadence and validated (SAV-121): `monday` (ISO
+   * week) for weekly, `first` (calendar 1st) for monthly, `local-day` for
+   * daily. All anchors are local to the consumer.
+   */
   reset: string
 }
 
