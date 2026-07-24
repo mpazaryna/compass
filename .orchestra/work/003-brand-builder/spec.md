@@ -1,6 +1,6 @@
 ---
 ticket: 003-brand-builder
-status: approved
+status: in-progress
 created_on: 2026-07-24
 approved_on: 2026-07-24
 ---
