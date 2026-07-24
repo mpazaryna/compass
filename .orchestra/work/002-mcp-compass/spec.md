@@ -1,6 +1,6 @@
 ---
 ticket: 002-mcp-compass
-status: reviewed
+status: closed
 created_on: 2026-07-24
 approved_on: 2026-07-24
 ---
