@@ -1,6 +1,6 @@
 ---
 ticket: 003-brand-builder
-status: in-progress
+status: complete
 created_on: 2026-07-24
 approved_on: 2026-07-24
 ---
@@ -110,11 +110,11 @@ change is the served set (bake test updated to match) and the instructions
 
 | Deliverable | Location | Status |
 |-------------|----------|--------|
-| Brand Builder bearing (v2, 2 stages) | `apps/mcp-compass/bearings/brand-builder.yaml` | Not started |
-| Bake reads the served bearing set | `apps/mcp-compass/scripts/build-bearings.mjs` | Not started |
-| Journey-running `initialize` instructions | `apps/mcp-compass/src/instructions.ts` | Not started |
-| Updated integration assertions | `apps/mcp-compass/test/*.integration.test.ts` | Not started |
-| Updated E2E assertion (real prompt) | `apps/mcp-compass/test/connector.e2e.test.ts` | Not started |
+| Brand Builder bearing (v2, 2 stages) | `apps/mcp-compass/bearings/brand-builder.yaml` | Delivered |
+| Bake reads the served bearing set | `apps/mcp-compass/scripts/build-bearings.mjs` | Delivered |
+| Journey-running `initialize` instructions | `apps/mcp-compass/src/instructions.ts` | Delivered |
+| Updated integration assertions | `apps/mcp-compass/test/*.integration.test.ts` | Delivered |
+| Updated E2E assertion (real prompt) | `apps/mcp-compass/test/connector.e2e.test.ts` | Delivered |
 
 ## Acceptance Criteria
 
