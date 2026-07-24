@@ -155,3 +155,70 @@ describe('parseBearing — profile dispatch rejects mismatched keys', () => {
     expect(() => parseBearing(businessPlanText + '\nstages: []\n')).toThrow(/stages/)
   })
 })
+
+// --- Step 4: construct, don't cast -------------------------------------------
+
+const journeyWithStage = (extra: string): string =>
+  [
+    'bearing: j',
+    'name: "J"',
+    'version: 1',
+    'profile: journey',
+    'stages:',
+    '  - id: s1',
+    '    title: "S1"',
+    '    prompt: "p"',
+    '    gate:',
+    '      rule: "r"',
+  ].join('\n') + extra
+
+describe('parseBearing — journey optional fields validated, not cast through', () => {
+  it('accepts a stage with valid artifact, unlocks, and scoring', () => {
+    const yaml = journeyWithStage(
+      ['', '    artifact: "Doc"', '    unlocks: [a, b]', '    scoring:', '      dimensions: [clarity]'].join('\n'),
+    )
+    const bearing = parseBearing(yaml) as JourneyBearing
+    expect(bearing.stages[0]!.artifact).toBe('Doc')
+    expect(bearing.stages[0]!.unlocks).toEqual(['a', 'b'])
+    expect(bearing.stages[0]!.scoring!.dimensions).toEqual(['clarity'])
+  })
+
+  it('rejects a non-string artifact', () => {
+    expect(() => parseBearing(journeyWithStage('\n    artifact: 3\n'))).toThrow(/artifact/)
+  })
+
+  it('rejects unlocks that is not an array of strings', () => {
+    expect(() => parseBearing(journeyWithStage('\n    unlocks: nope\n'))).toThrow(/unlocks/)
+  })
+
+  it('rejects an unlocks array with a non-string element', () => {
+    expect(() => parseBearing(journeyWithStage('\n    unlocks: [a, 3]\n'))).toThrow(/unlocks/)
+  })
+
+  it('rejects an empty scoring.dimensions', () => {
+    const yaml = journeyWithStage(['', '    scoring:', '      dimensions: []'].join('\n'))
+    expect(() => parseBearing(yaml)).toThrow(/dimensions/)
+  })
+
+  it('rejects a scoring.dimensions with a non-string element', () => {
+    const yaml = journeyWithStage(['', '    scoring:', '      dimensions: [ok, 3]'].join('\n'))
+    expect(() => parseBearing(yaml)).toThrow(/dimensions/)
+  })
+})
+
+const hasNoUndefinedValue = (value: unknown): boolean => {
+  if (Array.isArray(value)) return value.every(hasNoUndefinedValue)
+  if (value !== null && typeof value === 'object') {
+    return Object.values(value).every((v) => v !== undefined && hasNoUndefinedValue(v))
+  }
+  return true
+}
+
+describe('parseBearing — no key carries an undefined value at any depth', () => {
+  it('holds for a minimal journey bearing', () => {
+    expect(hasNoUndefinedValue(parseBearing(miniJourney))).toBe(true)
+  })
+  it('holds for a minimal standing bearing', () => {
+    expect(hasNoUndefinedValue(parseBearing(miniStanding))).toBe(true)
+  })
+})
