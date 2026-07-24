@@ -1,6 +1,6 @@
 ---
 ticket: 002-mcp-compass
-status: in-progress
+status: complete
 created_on: 2026-07-24
 approved_on: 2026-07-24
 ---
@@ -157,16 +157,16 @@ before Step 2; no commit leaves any suite red.
 
 | Deliverable | Location | Status |
 |-------------|----------|--------|
-| Pure tool layer | `apps/mcp-compass/src/tools.ts` | Not started |
-| Tool unit tests | `apps/mcp-compass/src/tools.test.ts` | Not started |
-| Bake script (parsed+validated) | `apps/mcp-compass/scripts/build-bearings.mjs` | Not started |
-| Bake integration tests | `apps/mcp-compass/test/bake.integration.test.ts` | Not started |
-| JSON-RPC handler | `apps/mcp-compass/src/index.ts` | Spiked → refactor |
-| `initialize` instructions | `apps/mcp-compass/src/instructions.ts` | Not started |
-| Worker integration tests | `apps/mcp-compass/test/worker.integration.test.ts` | Not started |
-| Connector E2E tests | `apps/mcp-compass/test/connector.e2e.test.ts` | Not started |
-| Wrangler config (stateless) | `apps/mcp-compass/wrangler.jsonc` | Spiked |
-| Deploy script | `apps/mcp-compass/package.json` | Spiked → extend |
+| Pure tool layer | `apps/mcp-compass/src/tools.ts` | Delivered |
+| Tool unit tests | `apps/mcp-compass/src/tools.test.ts` | Delivered |
+| Bake script (parsed+validated) | `apps/mcp-compass/scripts/build-bearings.mjs` | Delivered |
+| Bake integration tests | `apps/mcp-compass/test/bake.integration.test.ts` | Delivered |
+| JSON-RPC handler | `apps/mcp-compass/src/index.ts` | Delivered |
+| `initialize` instructions | `apps/mcp-compass/src/instructions.ts` | Delivered |
+| Worker integration tests | `apps/mcp-compass/test/worker.integration.test.ts` | Delivered |
+| Connector E2E tests | `apps/mcp-compass/test/connector.e2e.test.ts` | Delivered |
+| Wrangler config (stateless) | `apps/mcp-compass/wrangler.jsonc` | Delivered |
+| Deploy script | `apps/mcp-compass/package.json` | Delivered |
 
 ## Acceptance Criteria
 
