@@ -4,9 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "bake": "node scripts/bake.mjs",
+    "bake": "node scripts/build-bearings.mjs",
     "dev": "pnpm bake && wrangler dev",
     "deploy": "pnpm bake && wrangler deploy",
+    "test": "vitest run",
+    "test:integration": "pnpm bake && vitest run --config vitest.integration.config.ts",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "typecheck": "pnpm bake && tsc --noEmit"
   },
   "dependencies": {
@@ -14,6 +17,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250722.0",
+    "vitest": "^4.1.9",
     "wrangler": "^4.24.0"
   }
 }
