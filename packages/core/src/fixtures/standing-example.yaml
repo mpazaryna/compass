@@ -1,0 +1,57 @@
+# Standing-profile example — synthetic (schema v2). Replaces the client-data
+# business-plan.yaml as the loader's standing fixture. Deliberately exercises
+# all three facets, both comparator directions (gte + lte), and all three
+# cadences (weekly/monday, monthly/first, daily/local-day).
+
+# --- Shared envelope (v2) ----------------------------------------------------
+bearing: example-standing
+name: "Example Standing Bearing"
+version: 1
+client: example-co                # v2: client scope (absent would mean universal)
+source:
+  - docs/example-plan.md
+profile: standing
+
+# --- Facet 1 — Targets -------------------------------------------------------
+targets:
+  - id: revenue
+    label: "Revenue"
+    target: { value: 500000, unit: usd, period: annual }
+    actual:
+      source: example-finance     # Tier B — a live backend exists
+      goal_tool: get_goals
+      actual_tool: get_revenue
+    tier: B
+    direction: gte                # bigger is better
+    confirmed: true
+  - id: churn
+    label: "Monthly churn"
+    target: { value: 3, unit: percent, period: monthly }
+    actual: { source: none }      # Tier C — no data source yet
+    tier: C
+    direction: lte                # smaller is better
+    confirmed: false
+
+# --- Facet 2 — Rhythms (all three cadences) ----------------------------------
+rhythms:
+  - id: weekly-post
+    label: "Weekly post"
+    cadence: weekly
+    count: 3
+    reset: monday
+  - id: monthly-review
+    label: "Monthly review"
+    cadence: monthly
+    reset: first
+  - id: daily-standup
+    label: "Daily standup"
+    cadence: daily
+    reset: local-day
+
+# --- Facet 3 — Initiatives ---------------------------------------------------
+initiatives:
+  - id: launch
+    label: "Launch"
+    milestones:
+      - { id: beta, label: "Private beta" }
+      - { id: ga, label: "General availability" }
