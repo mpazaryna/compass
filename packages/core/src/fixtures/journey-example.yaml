@@ -1,0 +1,26 @@
+# Journey-profile example — the Brand Builder bearing (SAV-68), from the settled
+# schema spec. Used by the loader tests to prove a journey bearing validates.
+bearing: brand-builder
+name: "Brand Builder"
+version: 1
+profile: journey
+audience: owner
+source:
+  - .orchestra/shared/work/compass-bearing-schema/spec.md
+mode: [build, extract]            # journey-only: SAV-68's two postures
+stages:
+  - id: discovery
+    title: "Four-Layer Discovery"
+    prompt: "…agent posture / question set…"
+    gate:
+      rule: "all four layers answered AND synthesis confirmed"
+      requires_signoff: true
+    artifact: "Discovery synthesis"
+  - id: value-prop
+    title: "Value Proposition & Differentiators"
+    prompt: "…"
+    gate: { rule: "foundation statement accepted", requires_signoff: true }
+    artifact: "Foundation statement"
+    unlocks: [brand-fusion, pricing]   # gating dependency — locked until this passes
+    scoring:
+      dimensions: [clarity, differentiation]

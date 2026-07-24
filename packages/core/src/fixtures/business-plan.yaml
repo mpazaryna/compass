@@ -1,0 +1,128 @@
+# Savvy Hair Loft — 2026 Business Plan
+# The first STANDING bearing (profile: standing). Authored from the CEO Hub docs;
+# consumed by the iOS BearingService (SAV-113) and the targets REST facade (SAV-117).
+# Schema: .orchestra/shared/work/compass-bearing-schema/spec.md (SAV-77)
+# ADR-004 §1 tiering: Tier B = live finance fixtures; Tier C = no data source yet.
+#
+# Every number here predates Sheri's team rebuild and carries [confirm with Sheri]
+# from financial-targets.md — so every target is confirmed: false until she reviews
+# it in the app.
+
+# --- Shared envelope ---------------------------------------------------------
+bearing: business-plan
+name: "Savvy Hair Loft — 2026 Business Plan"
+version: 1
+profile: standing
+audience: ceo                     # CEO-Hub gate (mirrors audience: ceo front-matter)
+source:
+  - loft/data/kb/ceo/financial-targets.md
+  - loft/data/kb/ceo/marketing-plan.md
+  - loft/data/kb/ceo/growth-roadmap.md
+
+# --- Facet 1 — Targets (watched, display-only) -------------------------------
+# tier + actual.source encode ADR-004 §1. Only revenue has a live backend
+# (savvy-finance scorecard); the rest are target-only, labeled "no actuals".
+targets:
+  - id: revenue
+    label: "Revenue"
+    target: { value: 1200000, unit: usd, period: annual }
+    actual:
+      source: savvy-finance       # MCP server — canonical data layer (ADR-004 §2)
+      goal_tool: get_salon_goals
+      actual_tool: get_monthly_revenue
+    tier: B                       # live data exists (synthetic fixtures today, SAV-25)
+    confirmed: false              # [confirm with Sheri]
+
+  - id: retention
+    label: "Client retention"
+    target: { value: 85, unit: percent }
+    actual: { source: none }      # no data source — booking-system ingest, parked
+    tier: C
+    confirmed: false              # [confirm with Sheri] — the Same-Pager "critical number"
+
+  - id: referrals
+    label: "Referrals / month"
+    target: { value: 10, unit: count, period: monthly }
+    actual: { source: none }
+    tier: C
+    confirmed: false              # [confirm with Sheri]
+
+  - id: social-engagement
+    label: "Social engagement growth"
+    target: { value: 5, unit: percent, period: monthly }
+    actual: { source: none }
+    tier: C
+    confirmed: false              # [confirm with Sheri]
+
+  - id: client-satisfaction
+    label: "Client satisfaction (survey)"
+    target: { value: 9, unit: score }   # out of 10
+    actual: { source: none }
+    tier: C
+    confirmed: false              # [confirm with Sheri]
+
+  - id: wait-time
+    label: "Appointment wait time"
+    target: { value: 10, unit: minutes }   # target is "under 10 minutes"
+    actual: { source: none }
+    tier: C
+    confirmed: false              # [confirm with Sheri]
+
+# --- Facet 2 — Rhythms (held, interactive checklist) -------------------------
+# From the marketing plan's Seven Pillars + weekly social rhythm.
+# weekly anchor = ISO Monday; monthly anchor = calendar 1st.
+rhythms:
+  - id: transformation-reels
+    label: "Transformation reels"
+    cadence: weekly
+    count: 2
+    reset: monday
+  - id: educational-reel
+    label: "Educational reel"
+    cadence: weekly
+    count: 1
+    reset: monday
+  - id: behind-the-scenes
+    label: "Behind-the-scenes"
+    cadence: weekly
+    count: 1
+    reset: monday
+  - id: team-spotlight
+    label: "Team-member spotlight"
+    cadence: weekly
+    count: 1
+    reset: monday
+  - id: testimonial
+    label: "Client testimonial"
+    cadence: weekly
+    count: 1
+    reset: monday
+  - id: handwritten-cards
+    label: "Handwritten thank-you cards"
+    cadence: weekly
+    reset: monday
+  - id: client-of-the-week
+    label: "Client of the Week feature"
+    cadence: weekly
+    reset: monday
+  - id: luxury-add-on
+    label: "Complimentary luxury add-on (pre-booked guests)"
+    cadence: monthly
+    reset: first
+  - id: community-partnership
+    label: "Local-business partnership"
+    cadence: monthly
+    reset: first
+
+# --- Facet 3 — Initiatives (progressed, light milestone tracking) ------------
+initiatives:
+  - id: alexandra-launch
+    label: "Alexandra launch"
+    milestones:
+      - { id: intro-post, label: "Introduce Alexandra" }
+      - { id: first-appts, label: "First associate appointments" }
+  - id: savvy-circle
+    label: "Savvy Circle rollout"
+    milestones:
+      - { id: cards, label: "Referral cards printed" }
+      - { id: live, label: "Program live" }
