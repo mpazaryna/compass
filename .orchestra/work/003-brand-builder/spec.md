@@ -1,7 +1,8 @@
 ---
 ticket: 003-brand-builder
-status: draft
+status: approved
 created_on: 2026-07-24
+approved_on: 2026-07-24
 ---
 
 # Brand Builder — A Bearing That Guides a Live Q&A
