@@ -355,3 +355,83 @@ describe('parseBearing — output survives a JSON round-trip unchanged', () => {
     roundTripsCleanly(standingTarget())
   })
 })
+
+// --- Optional-field rejections: every optional field has a rejecting test ----
+
+const standingOneTarget = (targetLine: string, actualLine: string): string =>
+  [
+    'bearing: s',
+    'name: "S"',
+    'version: 1',
+    'profile: standing',
+    'targets:',
+    '  - id: t1',
+    '    label: "T1"',
+    `    target: ${targetLine}`,
+    `    actual: ${actualLine}`,
+    '    tier: C',
+    '    confirmed: false',
+    'rhythms: []',
+    'initiatives: []',
+  ].join('\n')
+
+describe('parseBearing — optional fields reject bad values when present', () => {
+  it('rejects a non-boolean gate.requires_signoff', () => {
+    expect(() => parseBearing(journeyWithStage('\n      requires_signoff: 3'))).toThrow(
+      /requires_signoff/,
+    )
+  })
+
+  it('rejects a mode that is not an array of strings', () => {
+    const yaml = [
+      'bearing: j',
+      'name: "J"',
+      'version: 1',
+      'profile: journey',
+      'mode: notarray',
+      'stages:',
+      '  - id: s1',
+      '    title: "S1"',
+      '    prompt: "p"',
+      '    gate:',
+      '      rule: "r"',
+    ].join('\n')
+    expect(() => parseBearing(yaml)).toThrow(/mode/)
+  })
+
+  it('rejects a non-string target.period', () => {
+    expect(() =>
+      parseBearing(standingOneTarget('{ value: 100, unit: usd, period: 5 }', '{ source: none }')),
+    ).toThrow(/period/)
+  })
+
+  it('rejects a non-string actual.goal_tool', () => {
+    expect(() =>
+      parseBearing(standingOneTarget('{ value: 100, unit: usd }', '{ source: sf, goal_tool: 5 }')),
+    ).toThrow(/goal_tool/)
+  })
+
+  it('rejects a non-string actual.actual_tool', () => {
+    expect(() =>
+      parseBearing(standingOneTarget('{ value: 100, unit: usd }', '{ source: sf, actual_tool: 5 }')),
+    ).toThrow(/actual_tool/)
+  })
+
+  it('rejects a non-number rhythm.count', () => {
+    const yaml = [
+      'bearing: s',
+      'name: "S"',
+      'version: 1',
+      'profile: standing',
+      'targets: []',
+      'rhythms:',
+      '  - id: r1',
+      '    label: "R1"',
+      '    cadence: weekly',
+      '    reset: monday',
+      '    count: "x"',
+      'initiatives: []',
+    ].join('\n')
+    expect(() => parseBearing(yaml)).toThrow(/count/)
+  })
+})
