@@ -330,3 +330,28 @@ describe('parseBearing — rhythm cadence/anchor pairing (SAV-121 daily)', () =>
     expect(() => parseBearing(standingRhythm('yearly', 'first'))).toThrow(/cadence/)
   })
 })
+
+// --- Step 7: serialization guarantee -----------------------------------------
+// M2's bake script embeds parsed bearings in a generated TS module, so the
+// parser's output must survive a JSON round-trip unchanged and carry no
+// undefined-valued key at any depth.
+
+describe('parseBearing — output survives a JSON round-trip unchanged', () => {
+  const roundTripsCleanly = (yaml: string): void => {
+    const parsed = parseBearing(yaml)
+    expect(JSON.parse(JSON.stringify(parsed))).toEqual(parsed)
+    expect(hasNoUndefinedValue(parsed)).toBe(true)
+  }
+
+  it('journey fixture round-trips and has no undefined-valued key', () => {
+    roundTripsCleanly(journeyText)
+  })
+
+  it('standing fixture round-trips and has no undefined-valued key', () => {
+    roundTripsCleanly(businessPlanText)
+  })
+
+  it('a standing bearing with a materialised direction round-trips', () => {
+    roundTripsCleanly(standingTarget())
+  })
+})
