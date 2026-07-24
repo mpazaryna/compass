@@ -1,11 +1,13 @@
-// @savvy/compass — bearing-driven conversation engine
-// Bearings live in /os/web/bearings/*.yaml
+// @compass/core — bearing loader + validator
 //
-// This entry point exposes the bearing loader/validator (SAV-116). The full
-// journey conversation engine is a later milestone (M2) and is intentionally
-// not built here — this is just the loader the settled schema (SAV-77) needs.
+// This entry point exposes the bearing parser/validator (SAV-116). The pure
+// parser (`parse.ts`) carries no `node:` import so a Worker can use it directly;
+// the filesystem reader (`load.ts`) is Node-only. The full journey conversation
+// engine is a later milestone (M2) — this is just the loader the settled schema
+// (SAV-77) needs.
 
-export { loadBearing, parseBearing, BearingValidationError } from './loader.ts'
+export { parseBearing, BearingValidationError } from './parse.ts'
+export { loadBearing } from './load.ts'
 export type {
   Bearing,
   BearingEnvelope,

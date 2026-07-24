@@ -1,10 +1,13 @@
-// @savvy/compass — bearing loader + validator
-// Loads a bearing YAML file, validates the shared envelope, dispatches on
-// `profile`, and returns a typed, parsed bearing. A profile-mismatched key
-// (e.g. `gate` in a standing bearing, `cadence` in a journey bearing) is a
-// validation error, not a silent ignore. Schema: SAV-77.
+// @compass/core — bearing parser + validator (pure)
+// Validates the shared envelope, dispatches on `profile`, and returns a typed,
+// parsed bearing. A profile-mismatched key (e.g. `gate` in a standing bearing,
+// `cadence` in a journey bearing) is a validation error, not a silent ignore.
+//
+// This module imports no `node:` builtin — it is the entry point a Worker uses
+// (Workers have no filesystem). The filesystem reader lives in `load.ts`, which
+// delegates here. The boundary is enforced by a test, not by discipline.
+// Schema: SAV-77.
 
-import { readFileSync } from 'node:fs'
 import { parse as parseYaml } from 'yaml'
 import type {
   Bearing,
@@ -103,17 +106,6 @@ export function parseBearing(yamlText: string): Bearing {
   return profile === 'journey'
     ? validateJourney(raw, ctx)
     : validateStanding(raw, ctx)
-}
-
-/** Read a bearing YAML file from disk and parse it. */
-export function loadBearing(filePath: string): Bearing {
-  let text: string
-  try {
-    text = readFileSync(filePath, 'utf8')
-  } catch (err) {
-    fail(`could not read bearing file "${filePath}": ${(err as Error).message}`)
-  }
-  return parseBearing(text)
 }
 
 // --- Journey validation ------------------------------------------------------
