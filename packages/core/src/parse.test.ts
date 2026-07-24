@@ -222,3 +222,34 @@ describe('parseBearing — no key carries an undefined value at any depth', () =
     expect(hasNoUndefinedValue(parseBearing(miniStanding))).toBe(true)
   })
 })
+
+// --- Step 5: journey stage id uniqueness -------------------------------------
+
+const twoStages = (idA: string, idB: string): string =>
+  [
+    'bearing: j',
+    'name: "J"',
+    'version: 1',
+    'profile: journey',
+    'stages:',
+    `  - id: ${idA}`,
+    '    title: "A"',
+    '    prompt: "p"',
+    '    gate:',
+    '      rule: "r"',
+    `  - id: ${idB}`,
+    '    title: "B"',
+    '    prompt: "p"',
+    '    gate:',
+    '      rule: "r"',
+  ].join('\n')
+
+describe('parseBearing — journey stage ids are unique within a bearing', () => {
+  it('rejects duplicate stage ids, naming the id', () => {
+    expect(() => parseBearing(twoStages('dup', 'dup'))).toThrow(/duplicate stage id "dup"/)
+  })
+
+  it('accepts distinct stage ids', () => {
+    expect(() => parseBearing(twoStages('a', 'b'))).not.toThrow()
+  })
+})

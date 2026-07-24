@@ -149,6 +149,16 @@ function validateJourney(raw: Dict, ctx: string, envelope: BearingEnvelope): Jou
 
   const stages = stagesRaw.map((s, i) => validateStage(s, `${ctx} stages[${i}]`))
 
+  // Stage ids must be unique — a duplicate makes `unlocks` ambiguous, and the
+  // gating graph is now the primary mechanism rather than a documented intent.
+  // (Referential integrity of `unlocks` — that it names ids in the bearing set
+  // — is deferred to M2, which has the whole set; recorded as a known gap.)
+  const seen = new Set<string>()
+  for (const stage of stages) {
+    if (seen.has(stage.id)) fail(`${ctx}: duplicate stage id "${stage.id}"`)
+    seen.add(stage.id)
+  }
+
   const result: JourneyBearing = { ...envelope, profile: 'journey', stages }
   if (raw.mode !== undefined) {
     result.mode = requireStringArray(raw.mode, `${ctx}: "mode"`)
