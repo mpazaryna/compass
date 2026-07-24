@@ -1,6 +1,6 @@
 ---
 ticket: 001-loader
-status: in-progress
+status: complete
 created_on: 2026-07-20
 approved_on: 2026-07-20
 ---
@@ -193,17 +193,17 @@ an omission.
 
 | File | Purpose | Status |
 |------|---------|--------|
-| `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json` | Workspace root | Not started |
-| `packages/core/package.json`, `tsconfig.json` | `@compass/core` | Not started |
-| `packages/core/src/types.ts` | Schema types, v2 | Not started |
-| `packages/core/src/parse.ts` | Pure parser + validators | Not started |
-| `packages/core/src/load.ts` | Filesystem reader (Node only) | Not started |
-| `packages/core/src/index.ts` | Re-exports | Not started |
-| `packages/core/src/parse.test.ts` | Unit + serialization tests | Not started |
-| `packages/core/src/load.test.ts` | Integration tests | Not started |
-| `packages/core/src/fixtures/journey-example.yaml` | Journey fixture, v2 | Not started |
-| `packages/core/src/fixtures/standing-example.yaml` | Standing fixture, v2 | Not started |
-| `.orchestra/work/compass-bearing-schema/spec.md` | Owned schema spec, v2 | Not started |
+| `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json` | Workspace root | Delivered |
+| `packages/core/package.json`, `tsconfig.json` | `@compass/core` | Delivered |
+| `packages/core/src/types.ts` | Schema types, v2 | Delivered |
+| `packages/core/src/parse.ts` | Pure parser + validators | Delivered |
+| `packages/core/src/load.ts` | Filesystem reader (Node only) | Delivered |
+| `packages/core/src/index.ts` | Re-exports | Delivered |
+| `packages/core/src/parse.test.ts` | Unit + serialization tests | Delivered |
+| `packages/core/src/load.test.ts` | Integration tests | Delivered |
+| `packages/core/src/fixtures/journey-example.yaml` | Journey fixture, v2 | Delivered |
+| `packages/core/src/fixtures/standing-example.yaml` | Standing fixture, v2 | Delivered |
+| `.orchestra/work/compass-bearing-schema/spec.md` | Owned schema spec, v2 | Delivered |
 
 ## Acceptance Criteria
 

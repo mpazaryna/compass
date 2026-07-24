@@ -4,6 +4,7 @@ bearing: brand-builder
 name: "Brand Builder"
 version: 1
 profile: journey
+client: acme-salon              # v2: scopes the bearing to a client (absent = universal)
 source:
   - .orchestra/shared/work/compass-bearing-schema/spec.md
 mode: [build, extract]            # journey-only: SAV-68's two postures

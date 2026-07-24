@@ -7,12 +7,12 @@ import type { JourneyBearing, StandingBearing } from './types.ts'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const journeyFixturePath = resolve(here, 'fixtures/journey-example.yaml')
-const businessPlanPath = resolve(here, 'fixtures/business-plan.yaml')
+const standingFixturePath = resolve(here, 'fixtures/standing-example.yaml')
 
 // Reading a fixture to build a string is fine here — the test file may touch
 // node:fs. The guarantee under test is that parse.ts's own source never does.
 const journeyText = readFileSync(journeyFixturePath, 'utf8')
-const businessPlanText = readFileSync(businessPlanPath, 'utf8')
+const standingText = readFileSync(standingFixturePath, 'utf8')
 
 const miniJourney = [
   'bearing: mini',
@@ -146,13 +146,13 @@ describe('parseBearing — profile dispatch rejects mismatched keys', () => {
   })
 
   it('rejects a journey-only key (gate) in a standing bearing', () => {
-    expect(() => parseBearing(businessPlanText + '\ngate:\n  rule: "nope"\n')).toThrow(
+    expect(() => parseBearing(standingText + '\ngate:\n  rule: "nope"\n')).toThrow(
       /not valid for profile "standing"/,
     )
   })
 
   it('rejects a journey-only key (stages) in a standing bearing', () => {
-    expect(() => parseBearing(businessPlanText + '\nstages: []\n')).toThrow(/stages/)
+    expect(() => parseBearing(standingText + '\nstages: []\n')).toThrow(/stages/)
   })
 })
 
@@ -348,7 +348,7 @@ describe('parseBearing — output survives a JSON round-trip unchanged', () => {
   })
 
   it('standing fixture round-trips and has no undefined-valued key', () => {
-    roundTripsCleanly(businessPlanText)
+    roundTripsCleanly(standingText)
   })
 
   it('a standing bearing with a materialised direction round-trips', () => {
