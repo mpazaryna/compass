@@ -1,0 +1,19 @@
+{
+  "name": "@compass/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bake": "node scripts/bake.mjs",
+    "dev": "pnpm bake && wrangler dev",
+    "deploy": "pnpm bake && wrangler deploy",
+    "typecheck": "pnpm bake && tsc --noEmit"
+  },
+  "dependencies": {
+    "@compass/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250722.0",
+    "wrangler": "^4.24.0"
+  }
+}

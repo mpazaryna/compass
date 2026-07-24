@@ -1,0 +1,17 @@
+{
+  // Walking-skeleton spike for the M2 Compass MCP server. Serves bearings baked
+  // at build time over a hand-rolled Streamable HTTP MCP endpoint. No Durable
+  // Objects, no KV, no auth (dev / single-operator) — folds into M2 later.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "compass-mcp-spike",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-01",
+  // Shared savvy Cloudflare account (matches os/tools/agents/*/wrangler.*).
+  "account_id": "01bfa3fc31e4462e21428e9ca7d63e98",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  }
+  // Note: no nodejs_compat flag. savvy's agents set it, but @compass/core/parse
+  // has no node: import by design, so the Worker bundle doesn't need it.
+}
