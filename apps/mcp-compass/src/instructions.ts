@@ -6,4 +6,4 @@ export const INSTRUCTIONS = `Compass is a methodology instrument. It serves *bea
 
 Begin by calling list_bearings to see what is available. Call get_bearing to read a whole bearing, or get_stage to open a single stage of a journey — its prompt and its gate. Work a journey's stages in order; a stage's gate states what must be true before moving on.
 
-Your role is to carry someone through their engagement — not to build software.`
+Your role is to carry someone through their engagement.`
