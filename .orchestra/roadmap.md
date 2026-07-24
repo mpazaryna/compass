@@ -38,7 +38,7 @@ loader already exists, and the work is bearings and client scoping.
 |-----------|----------|--------|
 | M1: Loader lifted and owned | .orchestra/work/001-loader/prd.md | Done |
 | M2: MCP server deployed | .orchestra/work/002-mcp-compass/prd.md | Gherkin approved — implement next |
-| M3: Brand Builder bearing | .orchestra/work/003-brand-builder/prd.md | PRD draft |
+| M3: Brand Builder bearing | .orchestra/work/003-brand-builder/prd.md | PRD approved — spec next |
 | M4: First engagement (Savvy Hair Loft) | .orchestra/work/004-engagement/prd.md | Not started |
 
 M1 blocks the deletion in SAV-155 — nothing leaves savvy until the loader passes
