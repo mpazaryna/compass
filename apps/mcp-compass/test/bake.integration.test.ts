@@ -7,17 +7,26 @@ import { loadBearing } from '@compass/core'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const app = resolve(here, '..')
-const fixtures = resolve(app, '../../packages/core/src/fixtures')
+const bearingsDir = resolve(app, 'bearings')
 
 describe('build-bearings bake (real filesystem)', () => {
-  it('bakes parsed objects that deep-equal loadBearing of the same fixtures', async () => {
+  it('bakes parsed objects that deep-equal loadBearing of the served bearing set', async () => {
     // pnpm bake ran via test:integration; import the generated module.
     const { BEARINGS } = await import(resolve(app, 'src/bearings.generated.ts'))
-    const expected = [
-      loadBearing(resolve(fixtures, 'journey-example.yaml')),
-      loadBearing(resolve(fixtures, 'standing-example.yaml')),
-    ]
+    const expected = [loadBearing(resolve(bearingsDir, 'brand-builder.yaml'))]
     expect(BEARINGS).toEqual(expected)
+  })
+
+  it('serves the real Brand Builder — two stages, the unlocks hand-off, real prompts', async () => {
+    const { BEARINGS } = await import(resolve(app, 'src/bearings.generated.ts'))
+    const bb = BEARINGS.find((b: { bearing: string }) => b.bearing === 'brand-builder')
+    expect(bb.stages.map((s: { id: string }) => s.id)).toEqual(['discovery', 'foundation'])
+    expect(bb.stages[0].unlocks).toContain('foundation')
+    for (const stage of bb.stages) {
+      // Real content, not the M1 placeholder ellipsis.
+      expect(stage.prompt).not.toMatch(/…|\.\.\./)
+      expect(stage.prompt.length).toBeGreaterThan(60)
+    }
   })
 
   it('fails the build on a malformed bearing', () => {

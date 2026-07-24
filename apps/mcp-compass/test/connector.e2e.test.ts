@@ -46,6 +46,9 @@ describe('connector handshake over real HTTP', () => {
         params: { name: 'get_stage', arguments: { bearing: 'brand-builder', stage: 'discovery' } },
       })
     ).json()) as any
-    expect(JSON.parse(call.result.content[0].text).id).toBe('discovery')
+    const stage = JSON.parse(call.result.content[0].text)
+    expect(stage.id).toBe('discovery')
+    // Real question-set content, not the M1 placeholder ellipsis.
+    expect(stage.prompt).not.toMatch(/…|\.\.\./)
   })
 })

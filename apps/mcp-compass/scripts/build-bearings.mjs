@@ -9,8 +9,9 @@ import { fileURLToPath } from 'node:url'
 import { loadBearing } from '@compass/core'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const dir =
-  process.env.COMPASS_BEARINGS_DIR ?? resolve(here, '../../../packages/core/src/fixtures')
+// The served bearing set lives with the server. The example fixtures in
+// packages/core are schema-test-only and are no longer served (M3).
+const dir = process.env.COMPASS_BEARINGS_DIR ?? resolve(here, '../bearings')
 
 const files = readdirSync(dir)
   .filter((f) => f.endsWith('.yaml'))

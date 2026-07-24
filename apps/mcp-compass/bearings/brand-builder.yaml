@@ -1,0 +1,62 @@
+# Brand Builder — a guided journey from a blank slate toward a brand foundation.
+# Stage structure follows SAV-68's front stages (Four-Layer Discovery, then Zone
+# of Genius → Foundation). The prompt bodies are DRAFTS authored for function —
+# enough to conduct a real Q&A — and are NOT Sheri's authored IP; they are
+# pending her worksheets (SAV-68 open question). Schema v2.
+bearing: brand-builder
+name: "Brand Builder"
+version: 1
+profile: journey
+source:
+  - .orchestra/work/003-brand-builder/spec.md
+stages:
+  - id: discovery
+    title: "Four-Layer Discovery"
+    prompt: >
+      You are guiding a salon owner through Four-Layer Discovery. Ask ONE
+      question at a time and wait for the answer before asking the next — do not
+      answer for them, do not skip a layer, and do not summarize until all four
+      are done.
+
+
+      Layer 1, Craft: "What do you actually do, in your own words — the work
+      you're known for?"
+
+      Layer 2, Client: "Who is it for? Describe the person who lights up in your
+      chair."
+
+      Layer 3, Difference: "What do you do differently from every other salon
+      down the street?"
+
+      Layer 4, Why: "Why does this matter to you — what are you really building?"
+
+
+      When all four are answered, reflect a short synthesis back to the owner and
+      ask them to confirm it before continuing.
+    gate:
+      rule: "all four layers answered AND the owner confirms the synthesis"
+      requires_signoff: true
+    artifact: "Discovery synthesis"
+    unlocks: [foundation]
+
+  - id: foundation
+    title: "Zone of Genius to Foundation"
+    prompt: >
+      Building on the discovery synthesis, help the owner name their Zone of
+      Genius and draft a foundation statement. Ask ONE question at a time and
+      wait for each answer.
+
+
+      "Of everything you do, what is the one thing only you do this way?"
+
+      "When clients rave about you, what exactly do they say?"
+
+      "If your brand stood for a single promise, what would it be?"
+
+
+      Then draft a one-sentence foundation statement in the owner's own voice and
+      ask them to accept it or refine it.
+    gate:
+      rule: "the owner accepts the foundation statement"
+      requires_signoff: true
+    artifact: "Foundation statement"

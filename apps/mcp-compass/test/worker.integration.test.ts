@@ -24,7 +24,11 @@ describe('Worker handler — transport and tools', () => {
     const body = (await res.json()) as any
     expect(body.result.protocolVersion).toBe('2025-06-18')
     expect(body.result.capabilities.tools).toBeDefined()
+    // Instructions must make the client RUN the journey, not just fetch it.
     expect(body.result.instructions).toMatch(/bearing/i)
+    expect(body.result.instructions).toMatch(/one at a time/i)
+    expect(body.result.instructions).toMatch(/do not answer for them/i)
+    expect(body.result.instructions).toMatch(/gate/i)
     expect(body.result.instructions).not.toMatch(/software|write code/i)
   })
 
