@@ -7,13 +7,16 @@ import { loadBearing } from '@compass/core'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const app = resolve(here, '..')
-const bearingsDir = resolve(app, 'bearings')
+// Authored bearings live at the REPO ROOT, not inside the app — one folder per
+// bearing, `bearings/<slug>/bearing.yaml` (SHE-18). Mirrors Orchestra's
+// top-level `skills/<name>/`.
+const bearingsDir = resolve(app, '../../bearings')
 
 describe('build-bearings bake (real filesystem)', () => {
   it('bakes parsed objects that deep-equal loadBearing of the served bearing set', async () => {
     // pnpm bake ran via test:integration; import the generated module.
     const { BEARINGS } = await import(resolve(app, 'src/bearings.generated.ts'))
-    const expected = [loadBearing(resolve(bearingsDir, 'brand-builder.yaml'))]
+    const expected = [loadBearing(resolve(bearingsDir, 'brand-builder', 'bearing.yaml'))]
     expect(BEARINGS).toEqual(expected)
   })
 
