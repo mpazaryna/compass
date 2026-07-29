@@ -1,0 +1,13 @@
+# Deliberately misplaced: a VALID bearing sitting loose at the root of a bearings
+# directory instead of inside its own home. Used to prove the bake fails the
+# build rather than silently skipping it — the mistake the old flat layout
+# trained authors into. Valid on purpose: the point is the location, not the
+# content.
+bearing: loose
+name: "Loose Bearing"
+version: 1
+profile: journey
+stages:
+  - id: only
+    title: "Only Stage"
+    prompt: "Ask the person one question and wait for the answer."

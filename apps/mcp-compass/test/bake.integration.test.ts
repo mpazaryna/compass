@@ -32,21 +32,45 @@ describe('build-bearings bake (real filesystem)', () => {
     }
   })
 
-  it('fails the build on a malformed bearing', () => {
-    let threw = false
-    let stderr = ''
+  // Run the real bake as a subprocess against a fixture root. Returns whether it
+  // failed and what it said — the message is the authoring interface, so every
+  // negative test below asserts on the wording, not merely that it threw.
+  const bakeAgainst = (fixture: string): { threw: boolean; stderr: string } => {
     try {
       execFileSync('node', ['scripts/build-bearings.mjs'], {
         cwd: app,
-        env: { ...process.env, COMPASS_BEARINGS_DIR: resolve(here, 'fixtures-bad') },
+        env: { ...process.env, COMPASS_BEARINGS_DIR: resolve(here, fixture) },
         stdio: 'pipe',
       })
+      return { threw: false, stderr: '' }
     } catch (e) {
-      threw = true
-      stderr = String((e as { stderr?: Buffer }).stderr ?? '')
+      return { threw: true, stderr: String((e as { stderr?: Buffer }).stderr ?? '') }
     }
+  }
+
+  it('fails the build on a malformed bearing', () => {
+    const { threw, stderr } = bakeAgainst('fixtures-bad')
     expect(threw).toBe(true)
     expect(stderr).toMatch(/name/)
+  })
+
+  it('fails the build on a bearing home with no bearing.yaml', () => {
+    const { threw, stderr } = bakeAgainst('fixtures-no-bearing')
+    expect(threw).toBe(true)
+    // Names the home that is wrong and the file that is missing, then says what
+    // the shape should be — an author must not have to read the bake to fix it.
+    expect(stderr).toMatch(/bearing home "brand-builder"/)
+    expect(stderr).toMatch(/has no bearing\.yaml/)
+    expect(stderr).toMatch(/each bearing is a directory containing bearing\.yaml/)
+  })
+
+  it('fails the build on a bearing left loose at the bearings root', () => {
+    const { threw, stderr } = bakeAgainst('fixtures-loose')
+    expect(threw).toBe(true)
+    // Silently skipping it would serve a client one bearing short with nothing
+    // to say so. Name the file and where it belongs.
+    expect(stderr).toMatch(/"loose\.yaml" sits loose in the bearings directory/)
+    expect(stderr).toMatch(/a bearing lives at <slug>\/bearing\.yaml/)
   })
 
   it('ships no YAML parser to the Worker — index.ts and tools.ts', () => {
