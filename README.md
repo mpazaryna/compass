@@ -53,9 +53,20 @@ custom connector — to its `/mcp` endpoint and it exposes three tools,
 `list_bearings`, `get_bearing`, and `get_stage`, and through its `initialize`
 instructions it *runs the journey with you* rather than just returning a bearing.
 
-The first bearing is **Brand Builder**. Bearings live in
-`apps/mcp-compass/bearings/`; authoring a new engagement is a new bearing file
-there followed by a redeploy — no code change.
+The first bearing is **Brand Builder**. Bearings live at the top level, one
+folder per bearing — its definition in `bearing.yaml` alongside a `README.md`
+and whatever support files it grows:
+
+```
+bearings/
+└── brand-builder/
+    ├── bearing.yaml   # the journey — what Compass serves
+    └── README.md      # context about the journey, for whoever authors it
+```
+
+Authoring a new engagement is a new `bearings/<slug>/bearing.yaml` followed by a
+redeploy — no code change. The bake validates every bearing at build time, so a
+malformed one fails the build rather than a client's session.
 
 > The current deployment is an early, single-tenant dev spike with **no auth**.
 > Per-client scoping (which needs identity, and so OAuth) is future work.
