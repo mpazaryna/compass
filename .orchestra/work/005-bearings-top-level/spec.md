@@ -1,6 +1,6 @@
 ---
 ticket: SHE-18
-status: in-progress
+status: reviewed
 created_on: 2026-07-28
 approved_on: 2026-07-28
 ---
@@ -238,7 +238,12 @@ only the place its content is authored.
 3. **"No code change to add a bearing" was verified empirically**, not just
    asserted: baking a two-home fixture root with nothing else edited printed
    `baked 2 parsed bearings: brand-builder, second-engagement`.
-4. **Deployed** to `https://compass-mcp-spike.mpazbot.workers.dev`
+4. **Review findings closed.** The self-review (`.orchestra/devlog/2026-Q3/2026-07-29-review-SHE-18.md`)
+   found three gaps beyond the spec, all closed before merge and all written
+   test-first this time: a loose `.yml` was still silently skipped, only the
+   first loose file was named, and a dot-directory was treated as a bearing
+   home. Integration tier 12 → 14. The bake stayed byte-identical throughout.
+5. **Deployed** to `https://compass-mcp-spike.mpazbot.workers.dev`
    (version `3bfc0c4a-6daf-49a3-aebf-38917a1265e0`). The E2E suite passed
    unmodified against it, and a direct probe confirmed `list_bearings` and
    `get_stage brand-builder/discovery` return exactly what they did before.
