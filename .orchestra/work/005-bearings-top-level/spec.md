@@ -1,6 +1,6 @@
 ---
 ticket: SHE-18
-status: complete
+status: reviewed
 created_on: 2026-07-28
 approved_on: 2026-07-28
 ---
