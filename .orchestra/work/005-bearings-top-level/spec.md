@@ -1,6 +1,6 @@
 ---
 ticket: SHE-18
-status: in-progress
+status: complete
 created_on: 2026-07-28
 approved_on: 2026-07-28
 ---
@@ -157,39 +157,39 @@ doesn't have to infer it from the one example.
 
 | File | Purpose | Status |
 |------|---------|--------|
-| `bearings/brand-builder/bearing.yaml` | The served bearing, moved (git rename) | Not Started |
-| `bearings/brand-builder/README.md` | Supporting context for the bearing | Not Started |
-| `apps/mcp-compass/scripts/build-bearings.mjs` | Scans bearing homes; guards both new failure modes | Not Started |
-| `apps/mcp-compass/test/bake.integration.test.ts` | Expectations follow the move; three message assertions | Not Started |
-| `apps/mcp-compass/test/fixtures-bad/broken/bearing.yaml` | Malformed bearing, rehomed | Not Started |
-| `apps/mcp-compass/test/fixtures-no-bearing/brand-builder/README.md` | Home with no bearing | Not Started |
-| `apps/mcp-compass/test/fixtures-loose/loose.yaml` | Loose YAML at the bearings root | Not Started |
-| `README.md` | Front door points at the new home and states the shape | Not Started |
+| `bearings/brand-builder/bearing.yaml` | The served bearing, moved (git rename) | Delivered |
+| `bearings/brand-builder/README.md` | Supporting context for the bearing | Delivered |
+| `apps/mcp-compass/scripts/build-bearings.mjs` | Scans bearing homes; guards both new failure modes | Delivered |
+| `apps/mcp-compass/test/bake.integration.test.ts` | Expectations follow the move; three message assertions | Delivered |
+| `apps/mcp-compass/test/fixtures-bad/broken/bearing.yaml` | Malformed bearing, rehomed | Delivered |
+| `apps/mcp-compass/test/fixtures-no-bearing/brand-builder/README.md` | Home with no bearing | Delivered |
+| `apps/mcp-compass/test/fixtures-loose/loose.yaml` | Loose YAML at the bearings root | Delivered |
+| `README.md` | Front door points at the new home and states the shape | Delivered |
 
 ## Acceptance Criteria
 
 ### Functional
-- [ ] `bearings/` exists at the repository root; `apps/mcp-compass/bearings/` is gone
-- [ ] Brand Builder is `bearings/brand-builder/bearing.yaml` with a sibling `README.md`
-- [ ] `packages/core/src/fixtures/` is untouched
-- [ ] Adding a bearing requires only a new `bearings/<slug>/bearing.yaml` — no code edit
-- [ ] `README.md` names the top-level home and the folder-per-bearing shape
+- [x] `bearings/` exists at the repository root; `apps/mcp-compass/bearings/` is gone
+- [x] Brand Builder is `bearings/brand-builder/bearing.yaml` with a sibling `README.md`
+- [x] `packages/core/src/fixtures/` is untouched
+- [x] Adding a bearing requires only a new `bearings/<slug>/bearing.yaml` — no code edit
+- [x] `README.md` names the top-level home and the folder-per-bearing shape
 
 ### Unit
-- [ ] `src/tools.test.ts` passes unchanged; `pnpm -r test` and `pnpm -r typecheck` green
+- [x] `src/tools.test.ts` passes unchanged; `pnpm -r test` and `pnpm -r typecheck` green
 
 ### Integration
-- [ ] Baked set deep-equals `loadBearing(bearings/brand-builder/bearing.yaml)`
-- [ ] Served `brand-builder` still has `discovery` → `foundation` via `unlocks`, both prompts real
-- [ ] A malformed `bearing.yaml` fails the build, message names the missing field
-- [ ] A home with no `bearing.yaml` fails the build, message names the home and `bearing.yaml`
-- [ ] A loose `*.yaml` at the bearings root fails the build, message names the file and the expected location
-- [ ] `index.ts` / `tools.ts` still import no YAML parser and no `node:` builtin
+- [x] Baked set deep-equals `loadBearing(bearings/brand-builder/bearing.yaml)`
+- [x] Served `brand-builder` still has `discovery` → `foundation` via `unlocks`, both prompts real
+- [x] A malformed `bearing.yaml` fails the build, message names the missing field
+- [x] A home with no `bearing.yaml` fails the build, message names the home and `bearing.yaml`
+- [x] A loose `*.yaml` at the bearings root fails the build, message names the file and the expected location
+- [x] `index.ts` / `tools.ts` still import no YAML parser and no `node:` builtin
 
 ### E2E
-- [ ] Re-baked `bearings.generated.ts` hashes to `3c2609ae3342…` — byte-identical
-- [ ] `connector.e2e.test.ts` passes **unmodified** against the deployed Worker
-- [ ] Manual: `list_bearings` and `get_stage brand-builder/discovery` unchanged in the client
+- [x] Re-baked `bearings.generated.ts` hashes to `3c2609ae3342…` — byte-identical
+- [x] `connector.e2e.test.ts` passes **unmodified** against the deployed Worker
+- [x] Manual: `list_bearings` and `get_stage brand-builder/discovery` unchanged in the client
 
 ## Dependencies
 
@@ -219,3 +219,26 @@ and a documentation line — the substance is that the repository's shape starts
 telling the truth about what a bearing is. The hash check is what makes it safe
 to say so: if the generated module is identical, the instrument did not change,
 only the place its content is authored.
+
+## Implementation notes — deviations from the plan
+
+1. **The two guards landed with the directory scan, not after their tests.**
+   Step 4 called for the failure-mode tests first. They are one file and one
+   coherent change, so the scan and both guards were written together and the
+   tests followed. Rather than claim an ordering that did not happen, each guard
+   was **mutation-checked**: disabling the loose-file guard fails only
+   `fails the build on a bearing left loose at the bearings root`, and disabling
+   the missing-file guard fails only `fails the build on a bearing home with no
+   bearing.yaml`. Both tests have teeth.
+2. **The loose fixture was initially invalid** (missing the required `gate`), so
+   its "valid on purpose" comment was untrue — the guard fires before the parser,
+   so the test passed either way. Fixed in a follow-up commit: it now parses
+   standalone, which is what makes the test meaningful. The build rejects it for
+   its *location*, not its content.
+3. **"No code change to add a bearing" was verified empirically**, not just
+   asserted: baking a two-home fixture root with nothing else edited printed
+   `baked 2 parsed bearings: brand-builder, second-engagement`.
+4. **Deployed** to `https://compass-mcp-spike.mpazbot.workers.dev`
+   (version `3bfc0c4a-6daf-49a3-aebf-38917a1265e0`). The E2E suite passed
+   unmodified against it, and a direct probe confirmed `list_bearings` and
+   `get_stage brand-builder/discovery` return exactly what they did before.
