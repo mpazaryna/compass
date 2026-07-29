@@ -20,21 +20,28 @@ const dir = process.env.COMPASS_BEARINGS_DIR ?? resolve(here, '../../../bearings
 const entries = readdirSync(dir, { withFileTypes: true })
 
 // A bearing that is never baked is never served, and nothing says so at runtime.
-// So a .yaml left loose at the root fails the build instead of being silently
-// skipped — that is the mistake the old flat layout trains an author into.
+// So a YAML file left loose at the root fails the build instead of being
+// silently skipped — that is the mistake the old flat layout trains an author
+// into. `.yml` counts: a typo'd extension is exactly as silent an omission.
+// All of them are named at once, so fixing a misplaced set takes one pass.
 const loose = entries
-  .filter((e) => e.isFile() && e.name.endsWith('.yaml'))
+  .filter((e) => e.isFile() && /\.ya?ml$/.test(e.name))
   .map((e) => e.name)
   .sort()
 
 if (loose.length > 0) {
+  const names = loose.map((f) => `"${f}"`).join(', ')
   throw new Error(
-    `"${loose[0]}" sits loose in the bearings directory — a bearing lives at <slug>/bearing.yaml`,
+    `${names} ${loose.length === 1 ? 'sits' : 'sit'} loose in the bearings directory` +
+      ` — a bearing lives at <slug>/bearing.yaml`,
   )
 }
 
+// Dot-directories are tooling debris (caches, editor state), never authored
+// content. Treating one as a bearing home would fail the build with a message
+// blaming an author for something they did not write.
 const slugs = entries
-  .filter((e) => e.isDirectory())
+  .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
   .map((e) => e.name)
   .sort()
 
