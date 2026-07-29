@@ -73,6 +73,26 @@ describe('build-bearings bake (real filesystem)', () => {
     expect(stderr).toMatch(/a bearing lives at <slug>\/bearing\.yaml/)
   })
 
+  it('names every loose bearing at once, .yml as well as .yaml', () => {
+    const { threw, stderr } = bakeAgainst('fixtures-loose-many')
+    expect(threw).toBe(true)
+    // Reporting one at a time makes an author rebuild to discover the next, and
+    // a .yml typo is exactly as silent an omission as a misplaced .yaml.
+    expect(stderr).toMatch(/"alpha\.yaml"/)
+    expect(stderr).toMatch(/"beta\.yml"/)
+    expect(stderr).toMatch(/sit loose in the bearings directory/)
+  })
+
+  it('does not mistake a dot-directory for a bearing home', () => {
+    const { threw, stderr } = bakeAgainst('fixtures-dotdir')
+    // `.cache` sorts before `brand-builder`, so whichever the bake complains
+    // about tells us whether dot-directories are skipped. It must be the real
+    // home — tooling debris is not an authoring mistake.
+    expect(threw).toBe(true)
+    expect(stderr).toMatch(/bearing home "brand-builder"/)
+    expect(stderr).not.toMatch(/\.cache/)
+  })
+
   it('ships no YAML parser to the Worker — index.ts and tools.ts', () => {
     const index = readFileSync(resolve(app, 'src/index.ts'), 'utf8')
     const tools = readFileSync(resolve(app, 'src/tools.ts'), 'utf8')
