@@ -1,7 +1,7 @@
 ---
 status: active
 created_on: 2026-07-20
-updated_on: 2026-07-20
+updated_on: 2026-07-29
 ---
 
 # Compass Roadmap
@@ -16,7 +16,7 @@ engagement without being rewritten.
 - [ ] The bearing schema has exactly one owner and one implementation
 - [ ] A client connects a chat client to a deployed endpoint and gets only their own bearings
 - [ ] A journey runs across more than one session — stages completed earlier stay completed
-- [ ] Authoring a new engagement is a bearing file, not a code change
+- [x] Authoring a new engagement is a bearing file, not a code change
 - [ ] Sheri completes at least one journey end to end and keeps the artifacts
 
 ## Context
@@ -43,6 +43,19 @@ loader already exists, and the work is bearings and client scoping.
 
 M1 blocks the deletion in SAV-155 — nothing leaves savvy until the loader passes
 its tests here.
+
+## Structural work
+
+Work that serves a success criterion directly rather than a milestone.
+
+| Work item | Location | Status |
+|-----------|----------|--------|
+| 005: Bearings live at the top level (SHE-18) | .orchestra/work/005-bearings-top-level/prd.md | Done |
+
+005 makes "authoring a new engagement is a bearing file, not a code change"
+literal: bearings moved to a repo-root `bearings/<slug>/`, out of the server
+application. Landed before M4 so the first engagement is authored in the shape
+that will hold, rather than moved afterward.
 
 ## References
 
