@@ -4,3 +4,4 @@ dist/
 .DS_Store
 *.generated.ts
 .wrangler/
+.mcp.json
