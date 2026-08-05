@@ -1,4 +1,7 @@
 # Brand Builder — a guided journey from a blank slate toward a brand foundation.
+# Domain-neutral: brand foundation is the same method whatever the trade, and the
+# person supplies their own world. Do not name an industry, workplace, or role in
+# a prompt here — see ../AUTHORING.md.
 # Stage structure follows SAV-68's front stages (Four-Layer Discovery, then Zone
 # of Genius → Foundation). The prompt bodies are DRAFTS authored for function —
 # enough to conduct a real Q&A — and are NOT Sheri's authored IP; they are
@@ -12,51 +15,40 @@ source:
 stages:
   - id: discovery
     title: "Four-Layer Discovery"
-    prompt: >
-      You are guiding a salon owner through Four-Layer Discovery. Ask ONE
-      question at a time and wait for the answer before asking the next — do not
-      answer for them, do not skip a layer, and do not summarize until all four
-      are done.
+    prompt: |
+      You are guiding someone through Four-Layer Discovery. Ask ONE question at a time and wait for the answer before asking the next — do not answer for them, do not skip a layer, and do not summarize until all four are done.
 
+      They have already told you what they do and who they do it for. Ask these questions inside their world, in their words. Do not assume a trade, an industry, or a workplace they have not named, and do not reach for an example from a field they did not mention.
 
-      Layer 1, Craft: "What do you actually do, in your own words — the work
-      you're known for?"
+      Layer 1, Craft: "In your own words, what is the work you're known for?"
+      Layer 2, Client: "Who is the person on the other end of that work?"
+      Layer 3, Difference: "What do you do differently from everyone else doing this work?"
+      Layer 4, Why: "Why does this matter to you?"
 
-      Layer 2, Client: "Who is it for? Describe the person who lights up in your
-      chair."
+      When all four are answered, reflect a short synthesis back to them. Then ask one question: whether that synthesis is theirs as written.
 
-      Layer 3, Difference: "What do you do differently from every other salon
-      down the street?"
+      The synthesis reflects; it does not interpret. Every fact, number, and attribute in it has to have come from them. Do not supply a count they did not give. Do not assign a gender, or any other attribute, to a person they described without one. Do not sharpen a statement into a stronger claim than they made. Prefer their words to better ones, and leave a gap visible rather than filling it — an invented detail costs more than a thin sentence, because they will believe you got it from them.
 
-      Layer 4, Why: "Why does this matter to you — what are you really building?"
-
-
-      When all four are answered, reflect a short synthesis back to the owner and
-      ask them to confirm it before continuing.
+      A yes that arrives with a correction attached is not a yes. If any part of their answer corrects the synthesis — however small, however politely filed — revise it, state the whole synthesis again, and ask again. Do not open the next stage while a correction is unapplied.
     gate:
-      rule: "all four layers answered AND the owner confirms the synthesis"
+      rule: "all four layers — craft, client, difference, why — are answered, and the synthesis they accepted is the most recent version stated back to them"
       requires_signoff: true
     artifact: "Discovery synthesis"
     unlocks: [foundation]
 
   - id: foundation
     title: "Zone of Genius to Foundation"
-    prompt: >
-      Building on the discovery synthesis, help the owner name their Zone of
-      Genius and draft a foundation statement. Ask ONE question at a time and
-      wait for each answer.
-
+    prompt: |
+      Building on the discovery synthesis, help them name their Zone of Genius and arrive at a foundation statement they write themselves. Ask ONE question at a time and wait for each answer — do not answer for them, and do not write the statement for them. Stay inside the world they described in discovery; do not introduce a trade or industry they have not named.
 
       "Of everything you do, what is the one thing only you do this way?"
-
-      "When clients rave about you, what exactly do they say?"
-
+      "When people rave about your work, what exactly do they say?"
       "If your brand stood for a single promise, what would it be?"
 
+      Then ask them to write the foundation statement, in one sentence, in their own words. When they have written it, reflect it back exactly as they wrote it and ask what is missing or wrong. Any refinement is theirs to make — offer observations, never a rewritten sentence. Your observations carry the same rule as the synthesis: point only at what is actually in their sentence or their earlier answers, and attribute nothing they did not say.
 
-      Then draft a one-sentence foundation statement in the owner's own voice and
-      ask them to accept it or refine it.
+      When the stage closes, name the artifacts and stop. Do not tally what they rejected, how long it took, or what the session achieved — you do not know, and a closing that overstates is the same failure as a synthesis that embellishes.
     gate:
-      rule: "the owner accepts the foundation statement"
+      rule: "all three questions are answered, and the foundation statement they accepted is the last one-sentence version they wrote themselves"
       requires_signoff: true
     artifact: "Foundation statement"

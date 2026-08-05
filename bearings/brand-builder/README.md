@@ -1,7 +1,12 @@
 # Brand Builder
 
-A guided journey that takes a salon owner from a blank slate to a brand
-foundation statement in their own voice.
+A guided journey that takes someone from a blank slate to a brand foundation
+statement in their own words.
+
+**Domain-neutral.** Brand foundation is the same method whatever the trade — a
+salon, a software practice, a nonprofit. The bearing supplies the method; the
+person supplies their world, from what they have already told the client about
+their work. No prompt here names an industry, a workplace, or a role.
 
 `bearing.yaml` is the journey itself — what Compass serves. This README is
 context *about* the journey, for whoever authors or revises it. Nothing here
@@ -14,13 +19,22 @@ at a time**:
 
 | Stage | `id` | Gate | Artifact | Unlocks |
 |---|---|---|---|---|
-| Four-Layer Discovery | `discovery` | all four layers answered **and** the owner confirms the synthesis; sign-off required | Discovery synthesis | `foundation` |
-| Zone of Genius to Foundation | `foundation` | the owner accepts the foundation statement; sign-off required | Foundation statement | — |
+| Four-Layer Discovery | `discovery` | all four layers — craft, client, difference, why — are answered, and the synthesis they accepted is the most recent version stated back to them; sign-off required | Discovery synthesis | `foundation` |
+| Zone of Genius to Foundation | `foundation` | all three questions answered, and the foundation statement they accepted is the last one-sentence version they wrote themselves; sign-off required | Foundation statement | — |
+
+Both gates state a condition that can be counted and leave the confirmation to
+`requires_signoff`, per [ADR-004](../../.orchestra/adr/ADR-004-a-gate-states-a-countable-condition.md).
+Both also require the **accepted version to be the latest** — a yes that arrives
+with a correction attached does not close a stage. Two eval runs found the guide
+closing discovery over an unapplied correction; the gate now has something to be
+false about, and the prompt carries the matching revise-and-restate loop.
 
 Discovery walks four short layers — Craft, Client, Difference, Why — and closes
 by reflecting a synthesis back for confirmation. Foundation builds on that
-synthesis to name the owner's zone of genius and draft a one-sentence promise in
-their own words.
+synthesis to name their zone of genius and arrive at a one-sentence promise
+**they write themselves** — the model asks, reflects it back as written, and
+offers observations, but never drafts the sentence for them
+(ADR-004's companion rule in `../AUTHORING.md`).
 
 ## Where the structure comes from
 
@@ -32,17 +46,17 @@ Everything past `foundation` is future work.
 
 **The prompt bodies are not Sheri's authored IP.** They were drafted for
 function during M3 (`.orchestra/work/003-brand-builder/`) — good enough to
-conduct a real exchange and prove the mechanism — pending her worksheets, which
-is still an open question on SAV-68. The same warning sits in a header comment
-on `bearing.yaml` so it travels with the file. Replace them with her language
-when it lands; do not present them as hers in the meantime.
+conduct a real exchange and prove the mechanism — pending Sheri's worksheets,
+which is still an open question on SAV-68. The same warning sits in a header
+comment on `bearing.yaml` so it travels with the file. Replace them with Sheri's
+language when it lands; do not present them as Sheri's in the meantime.
 
 ## How it runs
 
 The server carries the method; the client carries the loop and the state
 (ADR-001, ADR-002). Compass hands over a stage's prompt — it does not run a
 model. The connected client reads that prompt as its posture and question set,
-asks the owner those questions in turn, holds the answers in the owner's own
+asks them those questions in turn, holds the answers in the person's own
 workspace, and only moves on once the gate is met. The order is the value: a
 person who walks the stages earns the outcome.
 
