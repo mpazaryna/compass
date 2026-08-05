@@ -144,11 +144,30 @@ export function renderTranscript(entries: readonly Entry[]): string {
     .join('\n\n')
 }
 
+/**
+ * The token the client uses to end a run. Nothing else can: Compass never ends a
+ * session — under ADR-001 the client carries the loop — and the two models will
+ * trade goodbyes until the exchange budget is gone. The guide correctly stops
+ * *coaching* once the bearing closes; only the person can stop *replying*.
+ */
+export const CLIENT_DONE = '<<done>>'
+
+/** Split a client turn into what they said and whether they are finished. */
+export function readClientReply(raw: string): { closed: boolean; text: string } {
+  const closed = raw.includes(CLIENT_DONE)
+  return { closed, text: raw.split(CLIENT_DONE).join('').trim() }
+}
+
 /** Why a run stopped. A truncated run must not read like a finished one. */
-export type Ending = 'guide-fell-silent' | 'max-exchanges-reached' | 'tool-rounds-exceeded'
+export type Ending =
+  | 'journey-closed'
+  | 'guide-fell-silent'
+  | 'max-exchanges-reached'
+  | 'tool-rounds-exceeded'
 
 export function describeEnding(ending: Ending, exchanges: number): string {
   const detail: Record<Ending, string> = {
+    'journey-closed': 'the guide closed the bearing and the client had nothing further',
     'guide-fell-silent': 'the guide returned an empty turn',
     'max-exchanges-reached': 'the exchange limit was reached — the journey may be unfinished',
     'tool-rounds-exceeded': 'the guide would not stop calling tools — the journey did not run',

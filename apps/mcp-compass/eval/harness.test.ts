@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CLIENT_DONE,
+  describeEnding,
   isText,
+  readClientReply,
   readRpcBody,
   readToolResult,
   renderDocument,
@@ -178,6 +181,40 @@ describe('renderTranscript', () => {
       { kind: 'tool', name: 'get_stage', input: {}, text: 'no such stage', isError: true },
     ])
     expect(out).toMatch(/### Tool .*error/i)
+  })
+})
+
+describe('readClientReply', () => {
+  it('passes an ordinary answer through unchanged', () => {
+    expect(readClientReply('Colour correction, mostly.')).toEqual({
+      closed: false,
+      text: 'Colour correction, mostly.',
+    })
+  })
+
+  it('closes the journey when the client signals it is done', () => {
+    expect(readClientReply(CLIENT_DONE)).toEqual({ closed: true, text: '' })
+  })
+
+  it('keeps what they said alongside the signal', () => {
+    // Nothing ends a run otherwise: the guide stops coaching but keeps replying,
+    // and the two of them trade goodbyes until the exchange budget is gone.
+    expect(readClientReply(`Thanks for this.\n${CLIENT_DONE}`)).toEqual({
+      closed: true,
+      text: 'Thanks for this.',
+    })
+  })
+})
+
+describe('describeEnding', () => {
+  it('does not call a completed journey unfinished', () => {
+    const closed = describeEnding('journey-closed', 18)
+    expect(closed).toMatch(/18 exchanges/)
+    expect(closed).not.toMatch(/unfinished/)
+  })
+
+  it('still warns when the exchange limit cut a run short', () => {
+    expect(describeEnding('max-exchanges-reached', 24)).toMatch(/unfinished/)
   })
 })
 

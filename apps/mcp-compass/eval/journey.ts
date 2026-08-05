@@ -18,7 +18,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  CLIENT_DONE,
   describeEnding,
+  readClientReply,
   readRpcBody,
   readToolResult,
   renderDocument,
@@ -43,7 +45,9 @@ const MODEL = 'claude-opus-5'
 // different model to remove that.
 const AUDIT_MODEL = process.env.COMPASS_EVAL_AUDIT_MODEL ?? MODEL
 
-const MAX_EXCHANGES = Number(process.env.COMPASS_EVAL_MAX_EXCHANGES ?? 16)
+// Headroom, not a target. Brand Builder's two stages close well inside this;
+// the bound exists so a bearing that never ends cannot bill indefinitely.
+const MAX_EXCHANGES = Number(process.env.COMPASS_EVAL_MAX_EXCHANGES ?? 24)
 if (!Number.isInteger(MAX_EXCHANGES) || MAX_EXCHANGES < 1) {
   // Left unchecked this yields NaN, runs zero exchanges, and writes an
   // empty-transcript audit that reads like a result.
@@ -102,6 +106,9 @@ async function clientTurn(persona: string, history: Turn[]): Promise<string> {
       'Answer what you are asked and stop. Do not volunteer the next answer, do not summarise your',
       'own answers, and do not write polished marketing language — they cannot.',
       'If you are asked to write something in your own words, write it plainly and imperfectly.',
+      `When the consultant has said the work is finished and you have nothing further you want`,
+      `from them, end your reply with ${CLIENT_DONE} on its own line. Say your goodbye if you want`,
+      `one, but say it once — do not keep the exchange going out of politeness.`,
       '',
       persona,
     ].join('\n'),
@@ -169,12 +176,17 @@ async function main() {
     entries.push({ kind: 'guide', text: turn.text })
 
     clientHistory.push({ role: 'user', content: turn.text })
-    const owner = await clientTurn(persona, clientHistory)
-    clientHistory.push({ role: 'assistant', content: owner })
-    console.log(`[${i}] owner: ${owner.slice(0, 160).replace(/\s+/g, ' ')}…`)
-    entries.push({ kind: 'owner', text: owner })
-
-    conductorHistory.push({ role: 'user', content: owner })
+    const reply = readClientReply(await clientTurn(persona, clientHistory))
+    if (reply.text) {
+      clientHistory.push({ role: 'assistant', content: reply.text })
+      console.log(`[${i}] owner: ${reply.text.slice(0, 160).replace(/\s+/g, ' ')}…`)
+      entries.push({ kind: 'owner', text: reply.text })
+      conductorHistory.push({ role: 'user', content: reply.text })
+    }
+    if (reply.closed) {
+      ending = 'journey-closed'
+      break
+    }
   }
 
   const transcript = renderTranscript(entries)
