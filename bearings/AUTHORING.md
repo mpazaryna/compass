@@ -168,6 +168,14 @@ revises it, and **nothing in it reaches a client**. It should carry:
 - the canonical work it is grounded in, cited
 - any prior material it parallels, and how it deliberately deviates
 - the authoring status — whether prompts are final or drafts pending someone
+- a pointer to the bearing's `EVAL-LOG.md`, once it has been run
+
+**A bearing that has been run keeps an `EVAL-LOG.md`.** One entry per round of
+runs: what the audit found, what changed in the copy in response, and what is
+still open. Every rule in this file was paid for by a run, and the ones that
+turned out to matter were the failures that appeared on *both* personas — a
+distinction that is invisible unless somebody wrote it down. The transcripts are
+gitignored and the reasoning does not survive in a commit message.
 
 The grounding citation is what lets the catalog be defended when a client asks
 where this came from.

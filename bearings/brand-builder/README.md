@@ -67,6 +67,14 @@ and is parsed at build time — a malformed change fails the build rather than a
 client's session. After editing, `pnpm --filter @compass/mcp run deploy` bakes
 and ships it. No code change is involved.
 
+The schema is all the build can check. Everything that makes the copy work — the
+guards, the gates, the closing — is verified by running the bearing against both
+personas (`pnpm --filter @compass/mcp run eval:journey`) and reading what comes
+back. [`EVAL-LOG.md`](EVAL-LOG.md) records what each run found, what changed in
+response, and what is still open; the house rules those runs produced live in
+[`../AUTHORING.md`](../AUTHORING.md). Add an entry when you change the copy —
+a run that is not written down is a lesson that has to be learned twice.
+
 ## References
 
 - M3 work item — `.orchestra/work/003-brand-builder/` (PRD, spec, gherkin)
