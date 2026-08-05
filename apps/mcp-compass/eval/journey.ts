@@ -1,6 +1,6 @@
-// Journey eval — runs a bearing end to end against the deployed instrument,
-// with a model playing the conductor (what Claude Desktop would be) and a
-// second model playing the client from a fixed fact sheet.
+// Journey eval — runs a bearing end to end against a running instrument, with a
+// model playing the conductor (what Claude Desktop would be) and a second model
+// playing the client from a fixed fact sheet.
 //
 // This is NOT a unit test. It costs API calls and its output is a document to
 // read, not an assertion to trust blindly. It exists because a bearing is
@@ -9,10 +9,27 @@
 //
 // A model in a local harness does not breach ADR-001 — that constraint is "no
 // model loop in the cloud", about the deployed Worker. Nothing here runs on it.
+//
+// This file owns the two things that cannot be unit tested — the Anthropic API
+// and the instrument's endpoint. Everything deciding what a run records lives in
+// `harness.ts` and is covered by `harness.test.ts`.
 import Anthropic from '@anthropic-ai/sdk'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  describeEnding,
+  readRpcBody,
+  readToolResult,
+  renderDocument,
+  renderTranscript,
+  runGuideTurn,
+  textFrom,
+  type Ending,
+  type Entry,
+  type ModelReply,
+  type Turn,
+} from './harness.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const BASE = process.env.COMPASS_MCP_URL ?? 'http://localhost:8787'
@@ -21,7 +38,19 @@ const BEARING = process.env.COMPASS_EVAL_BEARING ?? 'brand-builder'
 // them is tuned, not neutral — see bearings/AUTHORING.md.
 const PERSONA = process.env.COMPASS_EVAL_PERSONA ?? 'sheri'
 const MODEL = 'claude-opus-5'
+// The auditor is the measuring instrument, not the subject, so it is separable:
+// one model grading a transcript it produced is self-evaluation. Point this at a
+// different model to remove that.
+const AUDIT_MODEL = process.env.COMPASS_EVAL_AUDIT_MODEL ?? MODEL
+
 const MAX_EXCHANGES = Number(process.env.COMPASS_EVAL_MAX_EXCHANGES ?? 16)
+if (!Number.isInteger(MAX_EXCHANGES) || MAX_EXCHANGES < 1) {
+  // Left unchecked this yields NaN, runs zero exchanges, and writes an
+  // empty-transcript audit that reads like a result.
+  throw new Error(
+    `COMPASS_EVAL_MAX_EXCHANGES must be a positive integer, got "${process.env.COMPASS_EVAL_MAX_EXCHANGES}"`,
+  )
+}
 
 const client = new Anthropic()
 
@@ -34,57 +63,33 @@ async function rpc(method: string, params?: unknown): Promise<any> {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ jsonrpc: '2.0', id: ++rpcId, method, params }),
   })
-  const body = (await res.json()) as any
-  if (body.error) throw new Error(`${method}: ${body.error.message}`)
-  return body.result
+  return readRpcBody(method, res, await res.text())
 }
 
-async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
-  const result = await rpc('tools/call', { name, arguments: args })
-  return result.content.map((c: { text: string }) => c.text).join('\n')
+async function callTool(name: string, input: unknown) {
+  return readToolResult(await rpc('tools/call', { name, arguments: input }))
 }
 
 // --- the two models -----------------------------------------------------------
 
-type Turn = { role: 'assistant' | 'user'; content: any }
-
-/** The conductor: what Claude Desktop is when it connects. Real instructions, real tools. */
-async function conductorTurn(instructions: string, tools: any[], history: Turn[]): Promise<string> {
-  for (;;) {
-    const res = await client.messages.create({
+/**
+ * The conductor: what Claude Desktop is when it connects. Real instructions,
+ * real tools. Temperature is left at the API default — the guide is the subject
+ * of the eval, and pinning it to 0 would test one deterministic path rather than
+ * the sampled behaviour a bearing actually has to hold against.
+ */
+function conductor(instructions: string, tools: unknown[]) {
+  return (history: Turn[]): Promise<ModelReply> =>
+    client.messages.create({
       model: MODEL,
       max_tokens: 16000,
       system: instructions,
-      tools,
-      messages: history as any,
+      tools: tools as Anthropic.ToolUnion[],
+      messages: history as Anthropic.MessageParam[],
     })
-    history.push({ role: 'assistant', content: res.content })
-
-    if (res.stop_reason !== 'tool_use') {
-      return res.content
-        .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-        .map((b) => b.text)
-        .join('\n')
-        .trim()
-    }
-
-    const results = []
-    for (const block of res.content) {
-      if (block.type !== 'tool_use') continue
-      let text: string
-      try {
-        text = await callTool(block.name, block.input as Record<string, unknown>)
-      } catch (err) {
-        text = `Error: ${(err as Error).message}`
-      }
-      console.log(`    · ${block.name}(${JSON.stringify(block.input)})`)
-      results.push({ type: 'tool_result', tool_use_id: block.id, content: text })
-    }
-    history.push({ role: 'user', content: results })
-  }
 }
 
-/** The client: answers from the fact sheet, in her own words. */
+/** The client: answers from the fact sheet, in their own words. */
 async function clientTurn(persona: string, history: Turn[]): Promise<string> {
   const res = await client.messages.create({
     model: MODEL,
@@ -100,13 +105,9 @@ async function clientTurn(persona: string, history: Turn[]): Promise<string> {
       '',
       persona,
     ].join('\n'),
-    messages: history as any,
+    messages: history as Anthropic.MessageParam[],
   })
-  return res.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n')
-    .trim()
+  return textFrom(res.content)
 }
 
 // --- run ----------------------------------------------------------------------
@@ -132,77 +133,109 @@ async function main() {
   console.log(`instrument: ${init.serverInfo.name}  tools: ${tools.map((t: any) => t.name).join(', ')}`)
 
   const persona = await readFile(join(HERE, `persona-${PERSONA}.md`), 'utf8')
+  const send = conductor(instructions, tools)
 
   const conductorHistory: Turn[] = [
     { role: 'user', content: `I'd like to work through the ${BEARING} bearing.` },
   ]
   const clientHistory: Turn[] = []
   console.log(`persona: ${PERSONA}`)
-  const transcript: string[] = []
+
+  const entries: Entry[] = []
+  let ending: Ending = 'max-exchanges-reached'
+  let exchanges = 0
 
   for (let i = 1; i <= MAX_EXCHANGES; i++) {
-    const guide = await conductorTurn(instructions, tools, conductorHistory)
-    if (!guide) break
-    console.log(`\n[${i}] guide: ${guide.slice(0, 160).replace(/\s+/g, ' ')}…`)
-    transcript.push(`### Guide\n\n${guide}`)
+    const turn = await runGuideTurn({ send, runTool: callTool, history: conductorHistory })
 
-    clientHistory.push({ role: 'user', content: guide })
+    // Tool traffic first, then what the guide said. Exact interleaving within a
+    // turn is not preserved — what the audit needs is which stages were opened,
+    // what their gates said, and everything the guide asked.
+    for (const call of turn.calls) {
+      console.log(`    · ${call.name}(${JSON.stringify(call.input)})${call.isError ? ' — error' : ''}`)
+      entries.push({ kind: 'tool', ...call })
+    }
+    if (turn.toolRoundsExceeded) {
+      ending = 'tool-rounds-exceeded'
+      break
+    }
+    if (!turn.text) {
+      ending = 'guide-fell-silent'
+      break
+    }
+
+    exchanges = i
+    console.log(`\n[${i}] guide: ${turn.text.slice(0, 160).replace(/\s+/g, ' ')}…`)
+    entries.push({ kind: 'guide', text: turn.text })
+
+    clientHistory.push({ role: 'user', content: turn.text })
     const owner = await clientTurn(persona, clientHistory)
     clientHistory.push({ role: 'assistant', content: owner })
     console.log(`[${i}] owner: ${owner.slice(0, 160).replace(/\s+/g, ' ')}…`)
-    transcript.push(`### Owner\n\n${owner}`)
+    entries.push({ kind: 'owner', text: owner })
 
     conductorHistory.push({ role: 'user', content: owner })
   }
 
-  // The deliverable: what she would be left holding.
-  const review = await client.messages.create({
-    model: MODEL,
-    max_tokens: 8000,
-    system: [
-      'You are auditing a transcript of a guided business exercise. Report only what the',
-      'transcript shows. Do not improve, complete, or invent any artifact.',
-      'Answer in markdown under these exact headings:',
-      '## Artifacts produced — quote each one verbatim, or write "not produced".',
-      '## Gates — for each stage the guide opened, state its gate and whether the transcript',
-      'shows it actually met, with the evidence.',
-      '## One question at a time — did the guide ask a single question per turn? Quote any turn',
-      'that asked more than one.',
-      '## Who drafted — did the OWNER write the foundation statement, or did the GUIDE write it',
-      'for her? Quote the moment it first appears.',
-      '## What broke — anything the bearing should have prevented and did not.',
-      '## Domain fit — did the guide ever assume a trade, industry, or workplace the person',
-      'did not name, or reach for an example from a field they never mentioned? Quote it.',
-    ].join('\n'),
-    messages: [{ role: 'user', content: transcript.join('\n\n') }],
-  })
-  const audit = review.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n')
+  const transcript = renderTranscript(entries)
+  const outcome = describeEnding(ending, exchanges)
+  console.log(`\n${outcome}`)
 
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
   const outDir = join(HERE, 'output')
   await mkdir(outDir, { recursive: true })
   const out = join(outDir, `${BEARING}-${PERSONA}-${stamp}.md`)
-  await writeFile(
-    out,
-    [
-      `# Journey eval — ${BEARING} (persona: ${PERSONA})`,
-      ``,
-      `Instrument: ${BASE} · conductor & client: ${MODEL}`,
-      ``,
-      `## Audit`,
-      ``,
-      audit,
-      ``,
-      `## Transcript`,
-      ``,
-      transcript.join('\n\n'),
-      ``,
+  const document = (audit?: string) =>
+    renderDocument({
+      bearing: BEARING,
+      persona: PERSONA,
+      instrument: BASE,
+      model: MODEL,
+      auditModel: AUDIT_MODEL,
+      outcome,
+      transcript,
+      ...(audit !== undefined ? { audit } : {}),
+    })
+
+  // Write the transcript before auditing. A run is dozens of model calls and the
+  // audit is one more that can fail; losing the journey to a failed audit is not
+  // a trade worth making.
+  await writeFile(out, document(), 'utf8')
+  console.log(`transcript written: ${out}`)
+
+  // The deliverable: what she would be left holding.
+  //
+  // No `temperature` — it is removed on this model family and returns a 400, so
+  // run-to-run agreement cannot be bought with a sampling parameter. What makes
+  // two audits comparable here is the fixed heading set below.
+  const review = await client.messages.create({
+    model: AUDIT_MODEL,
+    max_tokens: 8000,
+    system: [
+      'You are auditing a transcript of a guided business exercise. Report only what the',
+      'transcript shows. Do not improve, complete, or invent any artifact.',
+      'The transcript includes the tool calls the guide made and what came back — that is',
+      'where the stages it opened, and their gate rules, are stated verbatim.',
+      'Answer in markdown under these exact headings:',
+      '## Artifacts produced — quote each one verbatim, or write "not produced".',
+      '## Gates — for each stage the guide opened, quote its gate rule from the tool result',
+      'and state whether the transcript shows it actually met, with the evidence.',
+      '## One question at a time — did the guide ask a single question per turn? Quote any turn',
+      'that asked more than one.',
+      '## Who drafted — did the OWNER write the foundation statement, or did the GUIDE write it',
+      'for them? Quote the moment it first appears.',
+      '## What broke — anything the bearing should have prevented and did not.',
+      '## Domain fit — did the guide ever assume a trade, industry, or workplace the person',
+      'did not name, or reach for an example from a field they never mentioned? Quote it.',
+      '',
+      `How the run ended: ${outcome}`,
+      'If the run was cut short, say so under "What broke" and do not report an unreached',
+      'stage as a failure of the bearing.',
     ].join('\n'),
-    'utf8',
-  )
+    messages: [{ role: 'user', content: transcript }],
+  })
+  const audit = textFrom(review.content)
+  await writeFile(out, document(audit), 'utf8')
 
   console.log(`\n${'─'.repeat(60)}\n${audit}\n${'─'.repeat(60)}`)
   console.log(`\nwritten: ${out}`)
