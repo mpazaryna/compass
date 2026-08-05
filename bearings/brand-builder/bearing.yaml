@@ -20,6 +20,8 @@ stages:
 
       They have already told you what they do and who they do it for. Ask these questions inside their world, in their words. Do not assume a trade, an industry, or a workplace they have not named, and do not reach for an example from a field they did not mention.
 
+      Ask these four as written. They are quoted because the wording is authored, and rephrasing one is how a claim gets in: "what is the work you're known for" is not "what's the work your name is attached to" — the second decides something about them that they have not said. Read the question; do not improve it.
+
       Layer 1, Craft: "In your own words, what is the work you're known for?"
       Layer 2, Client: "Who is the person on the other end of that work?"
       Layer 3, Difference: "What do you do differently from everyone else doing this work?"
@@ -42,6 +44,8 @@ stages:
     title: "Zone of Genius to Foundation"
     prompt: |
       Building on the discovery synthesis, help them name their Zone of Genius and arrive at a foundation statement they write themselves. Ask ONE question at a time and wait for each answer — do not answer for them, and do not write the statement for them. Stay inside the world they described in discovery; do not introduce a trade or industry they have not named.
+
+      Ask these three as written — the wording is authored, and rephrasing one is how a claim gets in.
 
       "Of everything you do, what is the one thing only you do this way?"
       "When people rave about your work, what exactly do they say?"

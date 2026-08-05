@@ -193,3 +193,46 @@ of.
 
 **The bar is still not met.** Marco is clean twice running under this copy;
 Sheri is not.
+
+## 2026-08-05, run 7 — naming the shape did not fix it
+
+`brand-builder-sheri-2026-08-05T17-18-51-154Z.md` (14 exchanges, `client-ended`)
+Sheri only — Marco was clean twice running, so a second persona would have cost
+as much as the first and tested nothing new.
+
+First run with the seventh shape named in the prompt. **It recurred anyway**, and
+the audit spotted the irony: *"It is precisely the pattern the bearing warns
+against."*
+
+> Authored: `"In your own words, what is the work you're known for?"`
+> Asked: `"what's the work your name is attached to?"`
+
+Which relocates the diagnosis. This is not a model deciding to editorialise — it
+is a **paraphrase** of an authored question, with the claim riding in on the
+rewrite. Two of the three slips this run trace the same way. AUTHORING.md's
+quoting rule exists to prevent exactly this, but it is a rule for the author: no
+prompt ever told the model to ask the questions as written.
+
+**Changed:** both stages now say the questions are asked as written. This removes
+the opportunity rather than policing the output, and it is the class of fix the
+last two rounds should have reached for. **Unverified — no run has tested it.**
+
+Also this round: prompt caching, and the token line now in every document. A run
+costs roughly $0.58 where it cost about $1.30, and the day's twelve runs account
+for essentially all of the spend. Nothing about caching is behavioural, so runs
+either side remain comparable.
+
+## Standing note on the bar
+
+Seven rounds in, **no run has produced a corrupted artifact.** Every discovery
+synthesis and foundation statement has been accurate, owner-written, and
+correction-applied. Every failure has lived in passing commentary that did not
+propagate.
+
+The bar at the top of this file does not distinguish those, which makes it both
+unmeetable and a poor guide to risk. A two-tier version — blocking on a corrupted
+or ghost-written artifact, a gate closed over an unapplied correction, a domain
+assumption, or multiple questions in a turn; logged but not blocking on remarks
+that reach no artifact — would reflect what a client is actually exposed to.
+Recorded as a proposal, not applied: changing the bar is a decision, not a copy
+edit.

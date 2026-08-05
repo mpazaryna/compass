@@ -43,10 +43,19 @@ for the agent that will run the stage. It is never read aloud.
 
 > You are guiding someone through Four-Layer Discovery.
 
-**Put the questions in quotes, verbatim.** Quoted text is asked as written;
-unquoted text gets paraphrased. This is the single most important formatting
-rule — it is what preserves authored language across every client that runs the
-bearing.
+**Put the questions in quotes, verbatim — and say they are asked as written.**
+Quoted text is *more likely* to be asked as written; it is not guaranteed. A run
+produced "what's the work your name is attached to?" from an authored "In your
+own words, what is the work you're known for?" — and the paraphrase carried a
+claim the user had not made. Quoting is a rule for the author; the model needs
+telling too:
+
+> Ask these as written. They are quoted because the wording is authored, and
+> rephrasing one is how a claim gets in. Read the question; do not improve it.
+
+This is the cheapest guard in the file, because it removes the opportunity
+rather than policing the output. Most of the invented-premise slips traced back
+to a rephrased question, not to a model deciding to editorialise.
 
 **Label and count the questions.** `Layer 1, Craft:` … `Layer 2, Client:` …
 Position should be visible to both the model and the user, so they know how
