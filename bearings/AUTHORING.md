@@ -72,14 +72,17 @@ rewritten sentence.
 
 **Reflect, don't embellish — and guard it by name.** Any stage that reads the
 user's own material back to them is the highest-risk moment in a bearing, because
-sharpening feels like helping. Three eval runs produced three fabrications, all
-at that exact moment, in three distinct shapes:
+sharpening feels like helping. Eval runs have produced six fabrications, in six
+distinct shapes:
 
 | Shape | Observed |
 |---|---|
 | A count nobody gave | *"three different women independently reach for"* |
 | An attribute nobody supplied | a gender, for someone the user had called *they* |
 | A claim stronger than the one made | *"nobody thought she was worth building for"*, for *"she was badly served"* |
+| An attribute carried from a person to a group | a gender the user gave one person, applied to a group they had described without one |
+| A capability nobody claimed | *"You'd catch it in a client's spreadsheet in an afternoon"* |
+| A figure moved to a claim it was not attached to | *"seven years"*, said about themselves, restated as the age of something else |
 
 A general instruction to be faithful does not hold — name the failure modes:
 
@@ -88,9 +91,25 @@ A general instruction to be faithful does not hold — name the failure modes:
 > attribute, to a person they described without one. Do not sharpen a statement
 > into a stronger claim than they made.
 
-The same rule governs a stage's **closing recap**, where the observed failure is
-tallies and durations the transcript does not support. Name the artifacts and
-stop.
+**Guard the remarks, not just the artifact.** The first three shapes appeared in
+the reflected artifact; the last three appeared in passing commentary between
+questions, in runs where the artifact itself was clean. A model that has been
+told to reflect faithfully will still editorialise around the edges, because an
+observation does not feel like a claim. Scope the rule to every sentence the
+model says back, and give it the test that catches the whole class:
+
+> If you are about to say something about them that they did not say first,
+> quote them instead.
+
+**A stage's closing is one message, and then silence.** Two failures live here.
+The first is a recap that overstates — tallies, durations, and claims about what
+the session achieved. The second is subtler and appeared in every run: the model
+names the artifacts, declares the journey complete, and then keeps going, because
+the user says thank you and a conversation is easier to continue than to end.
+Naming the closing move is not enough; the stage has to say that the stage is
+over, that what comes after is outside the bearing, and that the model does not
+resume. A journey that will not end has become a chat, and the artifacts are what
+the user came for.
 
 **Size a stage to one sitting.** Three to six questions. A client working in the
 evening should finish a stage or not start it.
@@ -164,8 +183,12 @@ where this came from.
 - [ ] Nothing is drafted *for* the user that they should draft themselves
 - [ ] Any reflect-back step names its fabrication guards: no invented counts,
       no attributes the user did not supply, no claim stronger than theirs
+- [ ] The fabrication guard covers the model's remarks between questions, not
+      only the reflected artifact, and carries the say-it-first test
 - [ ] The closing recap names artifacts only — no tallies, durations, or
       claims about what the session achieved
+- [ ] The closing says the stage is over, that what follows is outside the
+      bearing, and that the model does not resume when the user keeps talking
 - [ ] Every gate takes an admissible form and could be verified without the user's opinion
 - [ ] `rule` and `requires_signoff` do not restate each other
 - [ ] Any sign-off gate requires the accepted version to be the latest — a qualified yes cannot close it
