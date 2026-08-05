@@ -315,6 +315,12 @@ describe('renderDocument', () => {
     expect(out).toContain('### Guide')
   })
 
+  it('records what the run cost when usage is known', () => {
+    // A run whose price is invisible is a run nobody can decide to stop taking.
+    const out = renderDocument({ ...base, usage: 'in 412k (cached 380k) · out 21k' })
+    expect(out).toContain('in 412k (cached 380k) · out 21k')
+  })
+
   it('includes the audit once it exists', () => {
     const out = renderDocument({ ...base, audit: '## Gates\n\nDiscovery: met.' })
     expect(out).toContain('Discovery: met.')

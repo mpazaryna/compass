@@ -83,6 +83,7 @@ distinct shapes:
 | An attribute carried from a person to a group | a gender the user gave one person, applied to a group they had described without one |
 | A capability nobody claimed | *"You'd catch it in a client's spreadsheet in an afternoon"* |
 | A figure moved to a claim it was not attached to | *"seven years"*, said about themselves, restated as the age of something else |
+| A claim smuggled into a question's premise | *"why is this the work you've built your name on rather than something easier"* — asserts both, before the user has said either |
 
 A general instruction to be faithful does not hold — name the failure modes:
 
@@ -100,6 +101,14 @@ model says back, and give it the test that catches the whole class:
 
 > If you are about to say something about them that they did not say first,
 > quote them instead.
+
+That test reads as governing *claims*, and the seventh shape slips under it: a
+question is not a claim, so a presupposition in the premise is not caught by an
+instruction about what the model asserts. It is the shape most worth guarding,
+because a question is the one thing every stage is made of. Say so directly:
+
+> A question carries claims too. Ask what you mean to ask and put nothing in the
+> premise.
 
 **A stage's closing is one message, and then silence.** Two failures live here.
 The first is a recap that overstates — tallies, durations, and claims about what

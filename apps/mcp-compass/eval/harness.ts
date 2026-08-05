@@ -261,12 +261,14 @@ export function renderDocument(run: {
   auditModel: string
   outcome: string
   transcript: string
+  usage?: string
   audit?: string
 }): string {
   return [
     `# Journey eval — ${run.bearing} (persona: ${run.persona})`,
     ``,
     `Instrument: ${run.instrument} · conductor & client: ${run.model} · auditor: ${run.auditModel}`,
+    ...(run.usage ? [``, `Tokens: ${run.usage}`] : []),
     ``,
     run.outcome,
     ``,

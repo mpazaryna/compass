@@ -60,6 +60,21 @@ if (!Number.isInteger(MAX_EXCHANGES) || MAX_EXCHANGES < 1) {
 
 const client = new Anthropic()
 
+// What the run spent. A run whose price is invisible is a run nobody can decide
+// to stop taking, and this harness bills real money every time it is opinionated
+// about a comma.
+const spend = { input: 0, output: 0, cacheWrite: 0, cacheRead: 0 }
+function bill(usage: Anthropic.Usage): void {
+  spend.input += usage.input_tokens
+  spend.output += usage.output_tokens
+  spend.cacheWrite += usage.cache_creation_input_tokens ?? 0
+  spend.cacheRead += usage.cache_read_input_tokens ?? 0
+}
+const thousands = (n: number) => `${Math.round(n / 1000)}k`
+const renderSpend = () =>
+  `in ${thousands(spend.input)} · cache write ${thousands(spend.cacheWrite)} · ` +
+  `cache read ${thousands(spend.cacheRead)} · out ${thousands(spend.output)}`
+
 // --- the instrument, over real MCP -------------------------------------------
 
 let rpcId = 0
@@ -85,14 +100,23 @@ async function callTool(name: string, input: unknown) {
  * the sampled behaviour a bearing actually has to hold against.
  */
 function conductor(instructions: string, tools: unknown[]) {
-  return (history: Turn[]): Promise<ModelReply> =>
-    client.messages.create({
+  return async (history: Turn[]): Promise<ModelReply> => {
+    const res = await client.messages.create({
       model: MODEL,
       max_tokens: 16000,
+      // The instructions and tools are byte-identical on every turn and the
+      // history only grows, so the whole prefix is re-billed each exchange
+      // without this. Auto-placement caches the last cacheable block, which is
+      // the conversation tail — earlier breakpoints stay readable, so hits
+      // accrue as the journey lengthens. Caching changes cost, not behaviour.
+      cache_control: { type: 'ephemeral' },
       system: instructions,
       tools: tools as Anthropic.ToolUnion[],
       messages: history as Anthropic.MessageParam[],
     })
+    bill(res.usage)
+    return res
+  }
 }
 
 /** The client: answers from the fact sheet, in their own words. */
@@ -117,8 +141,10 @@ async function clientTurn(persona: string, history: Turn[]): Promise<string> {
       '',
       persona,
     ].join('\n'),
+    cache_control: { type: 'ephemeral' },
     messages: history as Anthropic.MessageParam[],
   })
+  bill(res.usage)
   return textFrom(res.content)
 }
 
@@ -216,6 +242,7 @@ async function main() {
       auditModel: AUDIT_MODEL,
       outcome,
       transcript,
+      usage: renderSpend(),
       ...(audit !== undefined ? { audit } : {}),
     })
 
@@ -236,11 +263,13 @@ async function main() {
     system: auditPrompt({ stages, outcome }),
     messages: [{ role: 'user', content: transcript }],
   })
+  bill(review.usage)
   const audit = textFrom(review.content)
   await writeFile(out, document(audit), 'utf8')
 
   console.log(`\n${'─'.repeat(60)}\n${audit}\n${'─'.repeat(60)}`)
-  console.log(`\nwritten: ${out}`)
+  console.log(`\ntokens: ${renderSpend()}`)
+  console.log(`written: ${out}`)
 }
 
 main().catch((err) => {
