@@ -226,16 +226,21 @@ export function readClientReply(raw: string): { closed: boolean; text: string } 
   return { closed, text: raw.split(CLIENT_DONE).join('').trim() }
 }
 
-/** Why a run stopped. A truncated run must not read like a finished one. */
+/**
+ * Why a run stopped. A truncated run must not read like a finished one — and an
+ * ending may only claim what the transcript shows. `client-ended` says the
+ * client stopped, not that the bearing was closed: one run ended on an unapplied
+ * correction under a label asserting a closing that never happened.
+ */
 export type Ending =
-  | 'journey-closed'
+  | 'client-ended'
   | 'guide-fell-silent'
   | 'max-exchanges-reached'
   | 'tool-rounds-exceeded'
 
 export function describeEnding(ending: Ending, exchanges: number): string {
   const detail: Record<Ending, string> = {
-    'journey-closed': 'the guide closed the bearing and the client had nothing further',
+    'client-ended': 'the client ended the exchange',
     'guide-fell-silent': 'the guide returned an empty turn',
     'max-exchanges-reached': 'the exchange limit was reached — the journey may be unfinished',
     'tool-rounds-exceeded': 'the guide would not stop calling tools — the journey did not run',

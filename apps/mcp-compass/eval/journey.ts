@@ -108,9 +108,12 @@ async function clientTurn(persona: string, history: Turn[]): Promise<string> {
       'Answer what you are asked and stop. Do not volunteer the next answer, do not summarise your',
       'own answers, and do not write polished marketing language — they cannot.',
       'If you are asked to write something in your own words, write it plainly and imperfectly.',
-      `When the consultant has said the work is finished and you have nothing further you want`,
+      `When the consultant has said the work is finished, and you have nothing further you want`,
       `from them, end your reply with ${CLIENT_DONE} on its own line. Say your goodbye if you want`,
       `one, but say it once — do not keep the exchange going out of politeness.`,
+      `Never end that way while you are still working. Not while answering a question, not while`,
+      `agreeing to something, and above all not in a message where you correct or qualify`,
+      `anything — a correction means you are not finished, and ending there leaves it unfixed.`,
       '',
       persona,
     ].join('\n'),
@@ -191,7 +194,7 @@ async function main() {
       conductorHistory.push({ role: 'user', content: reply.text })
     }
     if (reply.closed) {
-      ending = 'journey-closed'
+      ending = 'client-ended'
       break
     }
   }

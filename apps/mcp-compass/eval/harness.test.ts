@@ -274,10 +274,14 @@ describe('readClientReply', () => {
 })
 
 describe('describeEnding', () => {
-  it('does not call a completed journey unfinished', () => {
-    const closed = describeEnding('journey-closed', 18)
-    expect(closed).toMatch(/18 exchanges/)
+  it('reports only what a client-ended run actually shows', () => {
+    const closed = describeEnding('client-ended', 18)
+    expect(closed).toBe('Ended after 18 exchanges: the client ended the exchange.')
     expect(closed).not.toMatch(/unfinished/)
+    // The client ending the exchange is not the guide closing the bearing. One
+    // run ended on an unapplied correction while the label claimed a closing
+    // that was nowhere in the transcript.
+    expect(closed).not.toMatch(/guide/i)
   })
 
   it('still warns when the exchange limit cut a run short', () => {

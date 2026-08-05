@@ -137,3 +137,59 @@ and is a decision, not a copy edit.
 stay-stopped rule. One run reached it and held; the other never got there. A rule
 that can only be tested when something else goes wrong is a rule with thin
 coverage.
+
+## 2026-08-05, run 5 — the first test of the strengthened instructions
+
+`brand-builder-sheri-2026-08-05T16-33-02-543Z.md` (13 exchanges) ·
+`brand-builder-dev-2026-08-05T16-34-04-219Z.md` (6 exchanges, void)
+
+First run after `instructions.ts` was strengthened to say a gate is held rather
+than asked about, and after the audit brief began deriving artifacts and gate
+rules from the served bearing rather than naming Brand Builder's.
+
+Sheri's run had **no fabrications at all** — every between-question remark
+traced to direct quotation. But the instruction change leaked its own machinery
+into what the person reads: the closing opened with *"Gate met — all three
+questions answered…"* before naming the artifacts, and the guide re-read a stage
+prompt mid-stage and explained itself: *"(That last call was just me re-reading
+the stage prompt — nothing changed.)"* Checking the gate had become visible work,
+narrated to the client.
+
+**Marco's run is void**, and the fault was the harness's. The persona emitted the
+end-of-run token in the same message as a correction — *"Yes, that's mine. Only
+thing I'd flag is 'ten years'…"* — so the run stopped before the guide could
+revise, and the ending then claimed the guide had closed a bearing whose closing
+message does not exist. The audit caught the contradiction itself: *"The stated
+ending does not match the transcript."*
+
+**Changed:** the instructions say the gate check is silent work; the client
+cannot end a run while correcting or answering; the ending is named
+`client-ended` and describes only what the transcript shows.
+
+## 2026-08-05, run 6 — the fixes hold, one shape left
+
+`brand-builder-sheri-2026-08-05T16-49-57-054Z.md` (16 exchanges) ·
+`brand-builder-dev-2026-08-05T16-49-39-776Z.md` (15 exchanges)
+Both `client-ended`, both complete.
+
+**Marco: clean.** *"Nothing in the run as transcribed breaks a rule the bearing
+set."* The qualified yes was caught rather than pocketed, the owner's epistemic
+hedge survived into the revised text, and the closing named the two artifacts and
+said nothing else. No gate narration anywhere in either run — that regression is
+gone.
+
+**Sheri: two slips, both in the remarks, and both a shape the guard does not
+name.** *"Why is this the work you've built your name on rather than something
+easier?"* — she had said neither that it was harder nor that she had built her
+name on it. And *"Other colourists do corrections too"* — she had said *salons*,
+never *colourists*. Neither reached the artifacts.
+
+The shape is new: the invention is inside a **question**, as a presupposition,
+rather than inside a statement about them. The six named shapes are all
+assertions, and the say-it-first test reads as governing what the model *claims*
+— a leading question slips under it. Worth naming as a seventh shape before the
+next bearing is authored, since a question is the one thing every stage is made
+of.
+
+**The bar is still not met.** Marco is clean twice running under this copy;
+Sheri is not.
