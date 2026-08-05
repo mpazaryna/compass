@@ -5,3 +5,5 @@ dist/
 *.generated.ts
 .wrangler/
 .mcp.json
+
+apps/mcp-compass/eval/output/

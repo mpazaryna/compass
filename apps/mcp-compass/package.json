@@ -10,12 +10,14 @@
     "test": "vitest run",
     "test:integration": "pnpm bake && vitest run --config vitest.integration.config.ts",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "eval:journey": "node --experimental-strip-types eval/journey.ts",
     "typecheck": "pnpm bake && tsc --noEmit"
   },
   "dependencies": {
     "@compass/core": "workspace:*"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@cloudflare/workers-types": "^4.20250722.0",
     "vitest": "^4.1.9",
     "wrangler": "^4.24.0"
