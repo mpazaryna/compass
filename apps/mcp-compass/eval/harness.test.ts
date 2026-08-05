@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  auditPrompt,
+  auditStages,
   CLIENT_DONE,
   describeEnding,
   isText,
@@ -181,6 +183,71 @@ describe('renderTranscript', () => {
       { kind: 'tool', name: 'get_stage', input: {}, text: 'no such stage', isError: true },
     ])
     expect(out).toMatch(/### Tool .*error/i)
+  })
+})
+
+describe('auditStages', () => {
+  const bearing = {
+    bearing: 'life-cycle',
+    profile: 'journey',
+    stages: [
+      {
+        id: 'placement',
+        title: 'Where You Are Now',
+        artifact: 'Placement and the fork, decided',
+        gate: { rule: 'the stage is named and the fork is decided with reasons', requires_signoff: true },
+      },
+    ],
+  }
+
+  it('reads each stage’s artifact and gate rule from the served bearing', () => {
+    expect(auditStages(bearing)).toEqual([
+      {
+        id: 'placement',
+        title: 'Where You Are Now',
+        artifact: 'Placement and the fork, decided',
+        rule: 'the stage is named and the fork is decided with reasons',
+      },
+    ])
+  })
+
+  it('rejects a bearing with no stages, naming what it got', () => {
+    expect(() => auditStages({ bearing: 'x', profile: 'standing' })).toThrowError(
+      /"x" is a standing bearing — the journey eval needs stages/,
+    )
+  })
+})
+
+describe('auditPrompt', () => {
+  const stages = [
+    { id: 'discovery', title: 'Discovery', artifact: 'Discovery synthesis', rule: 'all four layers answered' },
+    { id: 'foundation', title: 'Foundation', artifact: 'Foundation statement', rule: 'all three questions answered' },
+  ]
+  const prompt = () => auditPrompt({ stages, outcome: 'Ended after 12 exchanges: closed.' })
+
+  it('names every artifact the bearing declares', () => {
+    expect(prompt()).toContain('Discovery synthesis')
+    expect(prompt()).toContain('Foundation statement')
+  })
+
+  it('quotes every gate rule, so the audit checks the served text', () => {
+    expect(prompt()).toContain('all four layers answered')
+    expect(prompt()).toContain('all three questions answered')
+  })
+
+  it('tells the auditor how the run ended', () => {
+    expect(prompt()).toContain('Ended after 12 exchanges')
+  })
+
+  it('carries no artifact the bearing did not declare', () => {
+    // The audit used to hardcode Brand Builder's "foundation statement", which
+    // is nonsense pointed at any other bearing.
+    const other = auditPrompt({
+      stages: [{ id: 'p', title: 'P', artifact: 'Placement and the fork', rule: 'the fork is decided' }],
+      outcome: 'Ended after 4 exchanges: closed.',
+    })
+    expect(other).not.toMatch(/foundation statement/i)
+    expect(other).toContain('Placement and the fork')
   })
 })
 

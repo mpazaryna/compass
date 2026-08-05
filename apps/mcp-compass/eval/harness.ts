@@ -144,6 +144,74 @@ export function renderTranscript(entries: readonly Entry[]): string {
     .join('\n\n')
 }
 
+export interface AuditStage {
+  id: string
+  title: string
+  artifact: string
+  rule: string
+}
+
+/**
+ * The stages an audit checks, read from the bearing the instrument served rather
+ * than written into this file. A bearing declares its own artifacts and gate
+ * rules; an audit that names them from anywhere else is checking a different
+ * bearing than the one that ran.
+ */
+export function auditStages(bearing: unknown): AuditStage[] {
+  const b = bearing as { bearing?: string; profile?: string; stages?: unknown }
+  if (!Array.isArray(b.stages) || b.stages.length === 0) {
+    throw new Error(
+      `"${b.bearing}" is a ${b.profile} bearing — the journey eval needs stages to audit against`,
+    )
+  }
+  return b.stages.map((s: { id: string; title: string; artifact: string; gate?: { rule: string } }) => ({
+    id: s.id,
+    title: s.title,
+    artifact: s.artifact,
+    rule: s.gate?.rule ?? '(no gate rule declared)',
+  }))
+}
+
+/**
+ * The auditor's brief. The bearing-specific parts — which artifacts to look for,
+ * which gate rules to hold the transcript against — come from the served
+ * envelope; only the invariants every bearing must hold are written here.
+ */
+export function auditPrompt(opts: { stages: readonly AuditStage[]; outcome: string }): string {
+  const artifacts = opts.stages.map((s) => `- ${s.title} (\`${s.id}\`) produces: ${s.artifact}`)
+  const gates = opts.stages.map((s) => `- ${s.title} (\`${s.id}\`) gate: "${s.rule}"`)
+
+  return [
+    'You are auditing a transcript of a guided exercise. Report only what the',
+    'transcript shows. Do not improve, complete, or invent any artifact.',
+    'The transcript includes the tool calls the guide made and what came back.',
+    '',
+    'The bearing declares these artifacts:',
+    ...artifacts,
+    '',
+    'and these gates:',
+    ...gates,
+    '',
+    'Answer in markdown under these exact headings:',
+    '## Artifacts produced — for each artifact above, quote it verbatim from the',
+    'transcript, or write "not produced".',
+    '## Gates — for each stage the guide opened, quote its gate rule and state',
+    'whether the transcript shows it actually met, with the evidence.',
+    '## One question at a time — did the guide ask a single question per turn?',
+    'Quote any turn that asked more than one.',
+    '## Who drafted — for each artifact that is the person\'s own words, did THEY',
+    'write it or did the GUIDE write it for them? Quote the moment it first appears.',
+    '## What broke — anything the bearing should have prevented and did not.',
+    '## Domain fit — did the guide ever assume a trade, industry, or workplace the',
+    'person did not name, or reach for an example from a field they never mentioned?',
+    'Quote it.',
+    '',
+    `How the run ended: ${opts.outcome}`,
+    'If the run was cut short, say so under "What broke" and do not report an',
+    'unreached stage as a failure of the bearing.',
+  ].join('\n')
+}
+
 /**
  * The token the client uses to end a run. Nothing else can: Compass never ends a
  * session — under ADR-001 the client carries the loop — and the two models will

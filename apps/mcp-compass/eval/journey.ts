@@ -18,6 +18,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  auditPrompt,
+  auditStages,
   CLIENT_DONE,
   describeEnding,
   readClientReply,
@@ -139,6 +141,11 @@ async function main() {
   }))
   console.log(`instrument: ${init.serverInfo.name}  tools: ${tools.map((t: any) => t.name).join(', ')}`)
 
+  // What the audit will be held against, from the instrument rather than from
+  // this file — so a new bearing costs a folder and a bake, not a code change.
+  const stages = auditStages(JSON.parse((await callTool('get_bearing', { bearing: BEARING })).text))
+  console.log(`stages: ${stages.map((s) => s.id).join(' → ')}`)
+
   const persona = await readFile(join(HERE, `persona-${PERSONA}.md`), 'utf8')
   const send = conductor(instructions, tools)
 
@@ -223,27 +230,7 @@ async function main() {
   const review = await client.messages.create({
     model: AUDIT_MODEL,
     max_tokens: 8000,
-    system: [
-      'You are auditing a transcript of a guided business exercise. Report only what the',
-      'transcript shows. Do not improve, complete, or invent any artifact.',
-      'The transcript includes the tool calls the guide made and what came back — that is',
-      'where the stages it opened, and their gate rules, are stated verbatim.',
-      'Answer in markdown under these exact headings:',
-      '## Artifacts produced — quote each one verbatim, or write "not produced".',
-      '## Gates — for each stage the guide opened, quote its gate rule from the tool result',
-      'and state whether the transcript shows it actually met, with the evidence.',
-      '## One question at a time — did the guide ask a single question per turn? Quote any turn',
-      'that asked more than one.',
-      '## Who drafted — did the OWNER write the foundation statement, or did the GUIDE write it',
-      'for them? Quote the moment it first appears.',
-      '## What broke — anything the bearing should have prevented and did not.',
-      '## Domain fit — did the guide ever assume a trade, industry, or workplace the person',
-      'did not name, or reach for an example from a field they never mentioned? Quote it.',
-      '',
-      `How the run ended: ${outcome}`,
-      'If the run was cut short, say so under "What broke" and do not report an unreached',
-      'stage as a failure of the bearing.',
-    ].join('\n'),
+    system: auditPrompt({ stages, outcome }),
     messages: [{ role: 'user', content: transcript }],
   })
   const audit = textFrom(review.content)
