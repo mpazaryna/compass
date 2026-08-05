@@ -1,7 +1,7 @@
 ---
 status: active
 created_on: 2026-07-20
-updated_on: 2026-07-29
+updated_on: 2026-08-05
 ---
 
 # Compass Roadmap
@@ -39,7 +39,7 @@ loader already exists, and the work is bearings and client scoping.
 | M1: Loader lifted and owned | .orchestra/work/001-loader/prd.md | Done |
 | M2: MCP server deployed | .orchestra/work/002-mcp-compass/prd.md | Done |
 | M3: Brand Builder bearing | .orchestra/work/003-brand-builder/prd.md | Done |
-| M4: First engagement (Savvy Hair Loft) | .orchestra/work/004-engagement/prd.md | Not started |
+| M4: First engagement — the "Centering My Business" curriculum | .orchestra/work/004-engagement/prd.md | PRD drafted, awaiting approval |
 
 M1 blocks the deletion in SAV-155 — nothing leaves savvy until the loader passes
 its tests here.
@@ -62,3 +62,6 @@ that will hold, rather than moved afterward.
 - ADR-000: [The Score](adr/ADR-000-the-score.md)
 - ADR-001: [Compass Forks the Orchestra Pattern](adr/ADR-001-fork-the-orchestra-pattern.md)
 - ADR-002: [The Client's Workspace Is the Workspace](adr/ADR-002-the-client-workspace-is-the-workspace.md)
+- ADR-003: [Bearings Are Reviewed as Copy](adr/ADR-003-bearings-are-reviewed-as-copy.md)
+- ADR-004: [A Gate States a Countable Condition](adr/ADR-004-a-gate-states-a-countable-condition.md)
+- `bearings/AUTHORING.md` — house style for bearings, and the copy-review checklist

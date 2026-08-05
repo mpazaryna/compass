@@ -1,6 +1,6 @@
 ---
 id: ADR-004
-status: proposed
+status: accepted
 created_on: 2026-08-04
 ---
 
