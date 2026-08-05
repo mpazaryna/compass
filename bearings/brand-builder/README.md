@@ -42,14 +42,19 @@ The stage structure follows SAV-68's front stages (Four-Layer Discovery, then
 Zone of Genius → Foundation) — the first two of an eight-stage methodology.
 Everything past `foundation` is future work.
 
-## The prompts are drafts
+## Where the prompts came from
 
-**The prompt bodies are not Sheri's authored IP.** They were drafted for
-function during M3 (`.orchestra/work/003-brand-builder/`) — good enough to
-conduct a real exchange and prove the mechanism — pending Sheri's worksheets,
-which is still an open question on SAV-68. The same warning sits in a header
-comment on `bearing.yaml` so it travels with the file. Replace them with Sheri's
-language when it lands; do not present them as Sheri's in the meantime.
+**The prompt bodies are original and are nobody else's IP.** They were authored
+here during M3 (`.orchestra/work/003-brand-builder/`) to conduct a real exchange
+and prove the mechanism, and they have since been revised across seven rounds of
+eval runs ([`EVAL-LOG.md`](EVAL-LOG.md)). Only the *stage structure* is borrowed,
+from SAV-68's front stages.
+
+They were originally labelled drafts pending a practitioner's worksheets. That
+material is not coming — the engagement it belonged to is withdrawn — so these
+are the prompts, not a placeholder for them. The one part of the old warning that
+still binds: do not present them as any named practitioner's work. The same note
+sits in a header comment on `bearing.yaml` so it travels with the file.
 
 ## How it runs
 

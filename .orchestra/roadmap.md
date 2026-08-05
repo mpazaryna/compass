@@ -6,10 +6,10 @@ updated_on: 2026-08-05
 
 # Compass Roadmap
 
-**Objective:** A salon owner sits down in a chat client, works through the Brand
-Builder with Compass, and walks away with real artifacts in her own workspace —
-while the same instrument, pointed at a different bearing, serves the next
-engagement without being rewritten.
+**Objective:** Someone sits down in a chat client, works through a bearing with
+Compass, and walks away with real artifacts in their own workspace — while the
+same instrument, pointed at a different bearing, serves the next engagement
+without being rewritten.
 
 ## Success Criteria
 
@@ -17,7 +17,12 @@ engagement without being rewritten.
 - [ ] A client connects a chat client to a deployed endpoint and gets only their own bearings
 - [ ] A journey runs across more than one session — stages completed earlier stay completed
 - [x] Authoring a new engagement is a bearing file, not a code change
-- [ ] Sheri completes at least one journey end to end and keeps the artifacts
+- [ ] A person outside this project completes a journey end to end and keeps the artifacts
+
+The last criterion no longer names anyone. It is deliberately kept: every run so
+far has been two models talking to each other in `eval:journey`, and a
+methodology instrument that no person has walked is unvalidated in the one way
+that matters. Who that person is, and when, is open.
 
 ## Context
 
@@ -39,10 +44,22 @@ loader already exists, and the work is bearings and client scoping.
 | M1: Loader lifted and owned | .orchestra/work/001-loader/prd.md | Done |
 | M2: MCP server deployed | .orchestra/work/002-mcp-compass/prd.md | Done |
 | M3: Brand Builder bearing | .orchestra/work/003-brand-builder/prd.md | Done |
-| M4: First engagement — the "Centering My Business" curriculum | .orchestra/work/004-engagement/prd.md | PRD drafted, awaiting approval |
+| M4: Authenticated, client-scoped, resumable | needs a PRD | Not started |
 
 M1 blocks the deletion in SAV-155 — nothing leaves savvy until the loader passes
 its tests here.
+
+**M4 was the first engagement — a named client and a five-bearing curriculum.
+That is withdrawn.** The engagement is not happening, and the curriculum is not
+being authored; `.orchestra/work/004-engagement/` is marked superseded and kept
+for its research rather than deleted.
+
+What M4 carried that still stands is the platform work, which was never
+client-specific: authentication on the deployed endpoint, client scoping so a
+connection sees only its own bearings, and a journey that survives across
+sessions. Those serve two open success criteria on their own and need a PRD of
+their own. They were bundled into an engagement because an engagement made them
+unavoidable; the need does not disappear with it.
 
 ## Structural work
 
@@ -54,8 +71,9 @@ Work that serves a success criterion directly rather than a milestone.
 
 005 makes "authoring a new engagement is a bearing file, not a code change"
 literal: bearings moved to a repo-root `bearings/<slug>/`, out of the server
-application. Landed before M4 so the first engagement is authored in the shape
-that will hold, rather than moved afterward.
+application. It landed ahead of any new bearing being authored, so the next one
+starts in the shape that will hold rather than being moved afterward — which is
+still true now that the curriculum it was sequenced against is withdrawn.
 
 ## References
 

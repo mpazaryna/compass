@@ -3,9 +3,10 @@
 # person supplies their own world. Do not name an industry, workplace, or role in
 # a prompt here — see ../AUTHORING.md.
 # Stage structure follows SAV-68's front stages (Four-Layer Discovery, then Zone
-# of Genius → Foundation). The prompt bodies are DRAFTS authored for function —
-# enough to conduct a real Q&A — and are NOT Sheri's authored IP; they are
-# pending her worksheets (SAV-68 open question). Schema v2.
+# of Genius → Foundation). The prompt bodies are ORIGINAL, authored here for
+# function — they are nobody else's IP and must not be presented as anyone
+# else's. They were once described as pending a practitioner's worksheets; that
+# material is not coming, so these are the prompts. Schema v2.
 bearing: brand-builder
 name: "Brand Builder"
 version: 1

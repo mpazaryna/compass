@@ -1,8 +1,23 @@
 ---
 ticket: SHE-8
-status: draft
+status: superseded
 created_on: 2026-08-04
+superseded_on: 2026-08-05
 ---
+
+> **Superseded, never approved.** The engagement this PRD is built on is not
+> happening: the client is not being asked to use Compass, and the five bearings
+> plus capstone are not being authored. It is kept rather than deleted for two
+> reasons — `research.md` carries verified canonical citations and the argued
+> reasoning for two source changes, both of which stand on their own; and the
+> curriculum's shape is reusable if an engagement ever justifies it.
+>
+> The platform work described here — authentication, client scoping, and
+> journeys that survive across sessions — is **not** superseded. It was bundled
+> into an engagement because an engagement made it unavoidable, and it now needs
+> a PRD of its own. See the roadmap's M4 row.
+>
+> Read the rest of this file as a record of a plan that was not taken.
 
 # First Engagement — The "Centering My Business" Curriculum
 
